@@ -4,7 +4,6 @@ const config = {
     file: 'debug'
   },
   db: {
-    name: process.env.DB_NAME || 'Mord',
     url: process.env.DB_URL,
     opts: { useNewUrlParser: true }
   },
