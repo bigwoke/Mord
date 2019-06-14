@@ -24,7 +24,7 @@ function flattenArray (arr, result = []) {
   return result
 }
 
-function findRoles (mord, msg) {
+function getBotRoles (mord, msg) {
   if (msg.channel.type !== 'text') return null
   let roles = msg.guild.members.find(m => m.user.id === mord.user.id).roles
 
@@ -39,5 +39,5 @@ function findRoles (mord, msg) {
 module.exports = {
   flatArray: flattenArray,
   getFiles: getFiles,
-  findRoles: findRoles
+  getBotRoles: getBotRoles
 }

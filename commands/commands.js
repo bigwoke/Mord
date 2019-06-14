@@ -2,7 +2,7 @@ const Discord = require('discord.js')
 const tools = require('../tools.js')
 
 module.exports.run = async (mord, msg, args) => {
-  let roles = tools.findRoles(mord, msg)
+  let roles = tools.getBotRoles(mord, msg)
   let color = roles ? roles.last().color : 0
 
   let cmdEmbed = new Discord.RichEmbed()
