@@ -13,5 +13,6 @@ module.exports.run = async (mord, msg, args) => {
 module.exports.info = {
   name: 'ping',
   usage: `${process.env.PREFIX}ping`,
-  desc: 'Returns the round-trip latency between the client and Mord, and between Mord and API.'
+  desc: 'Returns the total latency between you and Mord, and between Mord and API.',
+  dm: false
 }

@@ -83,6 +83,7 @@ mord.on('message', msg => {
 
   let cmd = mord.commands.get(rawcmd.slice(cfg.prefix.length))
   if (!cmd) return
+  if (!cmd.info.dm) return msg.reply('This command cannot be run via DM.')
 
   // Check permissions here
 
