@@ -8,6 +8,9 @@ const config = {
     url: process.env.DB_URL,
     opts: { useNewUrlParser: true }
   },
+  modules: {
+    quotes: process.env.QUOTES === 'true'
+  },
   token: process.env.TOKEN,
   prefix: process.env.PREFIX || '!'
 }

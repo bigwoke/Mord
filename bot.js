@@ -7,9 +7,11 @@ const watch = require('node-watch')
 const cfg = require('./config.js')
 const log = require('./log.js')
 const tools = require('./tools.js')
+const db = require('./db.js')
 
 const mord = new Discord.Client()
 mord.commands = new Discord.Collection()
+db.mount(mord)
 
 tools.getFiles('./commands/').then(files => {
   files = tools.flatArray(files)
