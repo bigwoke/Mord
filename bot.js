@@ -11,7 +11,7 @@ const db = require('./db.js')
 
 const mord = new Discord.Client()
 mord.commands = new Discord.Collection()
-db.mount(mord)
+db.mountData(mord)
 
 tools.getFiles('./commands/').then(files => {
   files = tools.flatArray(files)
@@ -85,7 +85,9 @@ mord.on('message', msg => {
 
   let cmd = mord.commands.get(rawcmd.slice(cfg.prefix.length))
   if (!cmd) return
-  if (!cmd.info.dm) return msg.reply('This command cannot be run via DM.')
+  if (!cmd.info.dm && msg.channel.type === 'dm') {
+    return msg.reply('This command cannot be run via DM.')
+  }
 
   // Check permissions here
 
