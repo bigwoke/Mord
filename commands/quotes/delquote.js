@@ -3,8 +3,8 @@ const log = require('../../log.js')
 module.exports.run = async (mord, msg, args) => {
   if (!args[0]) {
     return msg.reply('Missing "number" argument.').then(resp => {
-      resp.delete(3000)
-      msg.delete(3000)
+      resp.delete(2000)
+      msg.delete(2000)
     })
   }
 

@@ -19,8 +19,6 @@ module.exports.run = async (mord, msg, args) => {
     cmdEmbed.setFooter('Commands unavailable in DM will not be listed.')
   }
 
-  // TODO: Add insurance for >25 commands
-
   commands.forEach(cmd => {
     // Check permissions here
     if (msg.channel.type === 'dm' && !cmd.info.dm) return

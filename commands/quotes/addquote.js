@@ -4,14 +4,14 @@ const db = require('../../db.js')
 module.exports.run = async (mord, msg, args) => {
   if (!args[0]) {
     return msg.reply('Missing "name" argument.').then(resp => {
-      resp.delete(2500)
-      msg.delete(2500)
+      resp.delete(2000)
+      msg.delete(2000)
     })
   }
   if (!args[1]) {
     return msg.reply('Missing quote.').then(resp => {
-      resp.delete(2500)
-      msg.delete(2500)
+      resp.delete(2000)
+      msg.delete(2000)
     })
   }
 
@@ -36,8 +36,8 @@ module.exports.run = async (mord, msg, args) => {
   let quote = hasDate ? args.slice(1, datePos).join(' ') : args.slice(1).join(' ')
   if (quote.length >= 1920) {
     return msg.reply('Quote is too long, maximum is 1920 characters.').then(resp => {
-      resp.delete(3000)
-      msg.delete(3000)
+      resp.delete(6000)
+      msg.delete(6000)
     })
   }
 
@@ -48,8 +48,8 @@ module.exports.run = async (mord, msg, args) => {
 
     if (Number.isNaN(Date.parse(dateRaw))) {
       return msg.reply('Date given is invalid.').then(resp => {
-        resp.delete(2500)
-        msg.delete(2500)
+        resp.delete(6000)
+        msg.delete(6000)
       })
     }
   } else {

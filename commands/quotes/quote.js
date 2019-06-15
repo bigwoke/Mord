@@ -45,15 +45,15 @@ function getQuote (mord, msg, args, cb) {
       if (err) log.error(`Error getting quote from database: ${err.stack}`)
       if (res === null) {
         return msg.reply('There is no quote with that number.').then(resp => {
-          resp.delete(3000)
-          msg.delete(3000)
+          resp.delete(2000)
+          msg.delete(2000)
         })
       }
 
       cb(res)
     })
   } else {
-    mord.data.db(msg.guild.id).collection('quotes').aggregate([{ sample: { size: 1 } }])
+    mord.data.db(msg.guild.id).collection('quotes').aggregate([{ $sample: { size: 1 } }])
       .toArray((err, res) => {
         if (err) log.error(`Error getting quote from database: ${err.stack}`)
 
