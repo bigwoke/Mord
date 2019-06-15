@@ -1,85 +1,89 @@
+const Discord = require('discord.js')
 const log = require('../../log.js')
 
-module.exports.run = async (mord, msg, args) => {
-  if (!args[0]) {
-    getRandomQuote((err, quote) => {
-      if (err) log.error(`Error getting quote from database: ${err.stack}`)
-      let opts = formatQuote(quote)
-      let date = quote.date.toLocaleString(undefined, opts)
-
-      msg.channel.send(`#${quote.number} - ${quote.author}: "${quote.quote}"\t*${date}*`)
-    })
-  } else {
-    getQuote((err, quote) => {
-      if (err) log.error(`Error getting quote from database: ${err.stack}`)
-      let opts = formatQuote(quote)
-      let date = quote.date.toLocaleString(undefined, opts)
-
-      msg.channel.send(`#${quote.number} - ${quote.author}: "${quote.quote}"\t*${date}*`)
-    })
+function formatDate (q) {
+  let vague = !q.date.getSeconds() && !q.date.getMilliseconds()
+  let opts = {
+    year: 'numeric',
+    month: 'numeric',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric',
+    second: 'numeric',
+    timeZoneName: 'short'
   }
 
-  function getQuote (num, callback) {
-    if (!Number.isInteger(parseInt(num))) {
+  if (vague) {
+    opts.second = undefined
+    if (q.date.getMinutes() === 0) {
+      opts.minute = undefined
+      if (q.date.getHours() === 0) {
+        opts.hour = undefined
+        opts.timeZoneName = undefined
+        opts.month = 'short'
+        if (q.date.getDate() === 1) {
+          opts.day = undefined
+          opts.month = 'long'
+        }
+      }
+    }
+  }
+  return opts
+}
+
+function getQuote (mord, msg, args, cb) {
+  if (args[0]) {
+    if (Number.isNaN(parseInt(args[0]))) {
       return msg.reply('"number" argument is not a number.').then(resp => {
         resp.delete(3000)
         msg.delete(3000)
       })
     }
 
-    let query = { number: parseInt(num) }
+    let query = { number: parseInt(args[0]) }
     mord.data.db(msg.guild.id).collection('quotes').findOne(query, (err, res) => {
-      if (err) {
-        callback(err)
-      } else {
-        callback(null, res)
+      if (err) log.error(`Error getting quote from database: ${err.stack}`)
+      if (res === null) {
+        return msg.reply('There is no quote with that number.').then(resp => {
+          resp.delete(3000)
+          msg.delete(3000)
+        })
       }
-    })
-  }
 
-  function getRandomQuote (callback) {
-    mord.data.db(msg.guild.id).collection('quotes')
-      .aggregate([{ $sample: { size: 1 } }]).toArray((err, res) => {
-        if (err) {
-          callback(err)
-        } else {
-          callback(null, res[0])
-        }
+      cb(res)
+    })
+  } else {
+    mord.data.db(msg.guild.id).collection('quotes').aggregate([{ sample: { size: 1 } }])
+      .toArray((err, res) => {
+        if (err) log.error(`Error getting quote from database: ${err.stack}`)
+
+        cb(res[0])
       })
   }
+}
 
-  function formatQuote (q) {
-    let vague = !q.date.getSeconds() && !q.date.getMilliseconds()
-    let opts = {
-      year: 'numeric',
-      month: 'numeric',
-      day: 'numeric',
-      hour: 'numeric',
-      minute: 'numeric',
-      second: 'numeric',
-      timeZoneName: 'short'
+module.exports.run = async (mord, msg, args) => {
+  getQuote(mord, msg, args, q => {
+    let opts = formatDate(q)
+    let date = q.date.toLocaleString(undefined, opts)
+
+    let quote = new Discord.RichEmbed()
+
+    if (typeof q.author === 'string') {
+      quote.setColor(0)
+      quote.setAuthor(q.author)
+      quote.setTitle(`"${q.quote}"`)
+      quote.setFooter(`#${q.number} - ${date}`)
+    } else {
+      let author = msg.guild.members.find(m => m.id === q.author.id)
+      quote.setColor(author.roles.last().color)
+      quote.setAuthor(author.user.tag, author.user.displayAvatarURL)
+      quote.setTitle(`"${q.quote}"`)
+      quote.setFooter(`#${q.number} - ${date}`)
     }
 
-    if (vague) {
-      opts.second = undefined
-
-      if (q.date.getMinutes() === 0) {
-        opts.minute = undefined
-
-        if (q.date.getHours() === 0) {
-          opts.hour = undefined
-          opts.timeZoneName = undefined
-          opts.month = 'short'
-
-          if (q.date.getDate() === 1) {
-            opts.day = undefined
-            opts.month = 'long'
-          }
-        }
-      }
-    }
-    return opts
-  }
+    msg.channel.send({ embed: quote })
+  })
 }
 
 module.exports.info = {
