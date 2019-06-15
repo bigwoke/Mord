@@ -22,7 +22,7 @@ module.exports.run = async (mord, msg, args) => {
     delete author.lastMessage
     delete author.settings
   } else {
-    let lookup = mord.users.find(u => { return u.username.toUpperCase() === author.toUpperCase() })
+    let lookup = mord.users.find(u => u.username.toUpperCase() === author.toUpperCase())
     if (lookup !== null) {
       author = lookup
       delete author.lastMessage
