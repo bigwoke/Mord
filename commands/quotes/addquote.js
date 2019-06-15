@@ -15,8 +15,22 @@ module.exports.run = async (mord, msg, args) => {
     })
   }
 
-  let name = args[0]
-  let datePos = args.indexOf('-date')
+  let author = args[0]
+
+  if (msg.mentions.users.size > 0) {
+    author = msg.mentions.users.first()
+    delete author.lastMessage
+    delete author.settings
+  } else {
+    let lookup = mord.users.find(u => { return u.username.toUpperCase() === author.toUpperCase() })
+    if (lookup !== null) {
+      author = lookup
+      delete author.lastMessage
+      delete author.settings
+    }
+  }
+
+  let datePos = args.indexOf('--date')
   let hasDate = datePos !== -1
 
   let quote = hasDate ? args.slice(1, datePos).join(' ') : args.slice(1).join(' ')
@@ -50,48 +64,26 @@ module.exports.run = async (mord, msg, args) => {
     let doc = {
       quote: quote,
       number: num,
-      author: name,
+      author: author,
       date: date
     }
 
     mord.data.db(msg.guild.id).collection('quotes').insertOne(doc, (error, result) => {
       if (error) log.error(`Error inserting quote: ${error.stack}`)
 
-      if (result.result.ok === 1) {
+      if (result && result.result.ok === 1) {
+        let name = author.tag ? author.tag : `"${author}"`
         log.info(`Quote #${num} in guild '${msg.guild.name}' added by ${msg.author.tag}`)
-        msg.channel.send(`Quote #${num} by "${name}" successfully added to the database.`)
+        msg.channel.send(`Quote #${num} by ${name} successfully added to the database.`)
       }
     })
   })
-
-  /* db.setupIndexes(mord, msg.guild.id)
-  db.checkCounters(mord, msg.guild.id)
-  db.nextValue(mord, `quotenumber_g${msg.guild.id}`, (err, res) => {
-    if (err) log.error(`Error updating counters collection: ${err.stack}`)
-
-    let num = res
-    let doc = {
-      quote: quote,
-      number: num,
-      author: name,
-      date: date
-    }
-
-    mord.data.collection('quotes').insertOne(doc, (error, result) => {
-      if (error) log.error(`Error inserting quote: ${error.stack}`)
-
-      if (result.result.ok === 1) {
-        log.info(`Quote #${num} in guild '${msg.guild.name}' added by ${msg.author.tag}`)
-        msg.channel.send(`Quote #${num} by "${name}" successfully added to the database.`)
-      }
-    })
-  }) */
 }
 
 module.exports.info = {
   name: 'addquote',
-  usage: `${process.env.PREFIX}addquote <name> <quote> [-date mm/dd/yyyy [hh:mm [am/pm]]]`,
-  desc: 'Adds a quote with optional date, attached by appending "-date", followed by a date. ' +
+  usage: `${process.env.PREFIX}addquote <@user | name> <quote> [--date mm/dd/yyyy [hh:mm [am/pm]]]`,
+  desc: 'Adds a quote with optional date, attached by appending "--date", followed by a date. ' +
     'If no date is provided, the current date and time is autofilled.',
   module: 'quotes',
   dm: false
