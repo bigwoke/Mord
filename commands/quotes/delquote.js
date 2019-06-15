@@ -31,5 +31,6 @@ module.exports.info = {
   usage: `${process.env.PREFIX}delquote <number>`,
   desc: 'Deletes the quote with the given number from the database.',
   module: 'quotes',
-  dm: false
+  dm: false,
+  permissions: 8
 }

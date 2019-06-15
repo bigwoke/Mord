@@ -91,5 +91,6 @@ module.exports.info = {
   usage: `${process.env.PREFIX}quote [number]`,
   desc: 'Prints a random quote, unless a number is specified.',
   module: 'quotes',
-  dm: false
+  dm: false,
+  permissions: 0
 }

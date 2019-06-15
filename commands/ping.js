@@ -14,5 +14,6 @@ module.exports.info = {
   name: 'ping',
   usage: `${process.env.PREFIX}ping`,
   desc: 'Returns the total latency between you and Mord, and between Mord and API.',
-  dm: true
+  dm: true,
+  permissions: 0
 }

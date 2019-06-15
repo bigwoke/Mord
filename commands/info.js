@@ -30,5 +30,6 @@ module.exports.info = {
   name: 'info',
   usage: `${process.env.PREFIX}info`,
   desc: 'Provides basic bot information.',
-  dm: true
+  dm: true,
+  permissions: 0
 }

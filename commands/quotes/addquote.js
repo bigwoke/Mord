@@ -86,5 +86,6 @@ module.exports.info = {
   desc: 'Adds a quote with optional date, attached by appending "--date", followed by a date. ' +
     'If no date is provided, the current date and time is autofilled.',
   module: 'quotes',
-  dm: false
+  dm: false,
+  permissions: 0
 }

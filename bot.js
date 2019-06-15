@@ -27,6 +27,9 @@ tools.getFiles('./commands/').then(files => {
       if (cmd.info.module && cfg.modules[cmd.info.module] === false) {
         return log.debug(`Module '${cmd.info.module}' is disabled, will not load ${file}`)
       }
+      if (cmd.info.dm && cmd.info.permissions) {
+        return log.warn(`Command file ${file} has conflicting DM/permission attributes.`)
+      }
       count++
 
       log.verbose(`${count}: Loaded ${path.relative('./commands/', file)}`)
@@ -51,6 +54,9 @@ watch('./commands/', { filter: /\.js$/, recursive: true }, (evt, file) => {
       }
       if (cmd.info.module && cfg.modules[cmd.info.module] === false) {
         return log.debug(`Not autoloading ${file} because its module is disabled in config.`)
+      }
+      if (cmd.info.dm && cmd.info.permissions) {
+        return log.warn(`Command file ${file} has conflicting DM/permission attributes.`)
       }
 
       log.info(`Auto-loaded ${path.relative('./commands/', file)}`)
@@ -89,9 +95,17 @@ mord.on('message', msg => {
     return msg.reply('This command cannot be run via DM.')
   }
 
-  // Check permissions here
+  let authorPerms = msg.guild.members.find(m => m.user.id === msg.author.id).permissions.bitfield
+  let hasPermission = cmd.info.permissions === 0 || (authorPerms & cmd.info.permissions) !== 0
 
-  cmd.run(mord, msg, args)
+  if (hasPermission) {
+    cmd.run(mord, msg, args)
+  } else {
+    msg.reply('You lack the required permission to run this command.').then(resp => {
+      resp.delete(3000)
+      msg.delete(3000)
+    })
+  }
 })
 
 mord.login(cfg.token)
