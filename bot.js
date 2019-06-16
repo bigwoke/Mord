@@ -95,16 +95,20 @@ mord.on('message', msg => {
     return msg.reply('This command cannot be run via DM.')
   }
 
-  let authorPerms = msg.guild.members.find(m => m.user.id === msg.author.id).permissions.bitfield
-  let hasPermission = cmd.info.permissions === 0 || (authorPerms & cmd.info.permissions) !== 0
+  if (msg.guild) {
+    let authorPerms = msg.guild.members.find(m => m.user.id === msg.author.id).permissions.bitfield
+    let hasPermission = cmd.info.permissions === 0 || (authorPerms & cmd.info.permissions) !== 0
 
-  if (hasPermission) {
-    cmd.run(mord, msg, args)
+    if (hasPermission) {
+      cmd.run(mord, msg, args)
+    } else {
+      msg.reply('You lack the required permission to run this command.').then(resp => {
+        resp.delete(3000)
+        msg.delete(3000)
+      })
+    }
   } else {
-    msg.reply('You lack the required permission to run this command.').then(resp => {
-      resp.delete(3000)
-      msg.delete(3000)
-    })
+    cmd.run(mord, msg, args)
   }
 })
 

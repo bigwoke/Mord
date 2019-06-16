@@ -1,6 +1,15 @@
 const Discord = require('discord.js')
 const tools = require('../tools.js')
 
+function checkPermissions (msg, cmd) {
+  if (msg.guild) {
+    let authorPerms = msg.guild.members.find(m => m.user.id === msg.author.id).permissions.bitfield
+    return (cmd.info.permissions === 0 || (authorPerms & cmd.info.permissions) !== 0)
+  } else {
+    return true
+  }
+}
+
 module.exports.run = async (mord, msg, args) => {
   let roles = tools.getBotRoles(mord, msg)
   let color = roles ? roles.last().color : 0
@@ -19,9 +28,8 @@ module.exports.run = async (mord, msg, args) => {
     cmdEmbed.setFooter('Commands unavailable in DM will not be listed.')
   }
 
-  let authorPerms = msg.guild.members.find(m => m.user.id === msg.author.id).permissions.bitfield
   commands.forEach(cmd => {
-    if (cmd.info.permissions !== 0 && (authorPerms & cmd.info.permissions) === 0) return
+    if (!checkPermissions(msg, cmd)) return
     if (msg.channel.type === 'dm' && !cmd.info.dm) return
     if (cmd.info.usage.length === 0 || cmd.info.desc.length === 0) return
     cmdEmbed.addField(cmd.info.usage, cmd.info.desc)
