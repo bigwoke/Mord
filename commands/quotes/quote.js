@@ -72,13 +72,13 @@ module.exports.run = async (mord, msg, args) => {
     if (typeof q.author === 'string') {
       quote.setColor(0)
       quote.setAuthor(q.author)
-      quote.setTitle(`"${q.quote}"`)
+      quote.setDescription(`"${q.quote}"`)
       quote.setFooter(`#${q.number} - ${date}`)
     } else {
       let author = msg.guild.members.find(m => m.id === q.author.id)
       quote.setColor(author.roles.last().color)
       quote.setAuthor(author.user.tag, author.user.displayAvatarURL)
-      quote.setTitle(`"${q.quote}"`)
+      quote.setDescription(`"${q.quote}"`)
       quote.setFooter(`#${q.number} - ${date}`)
     }
 
