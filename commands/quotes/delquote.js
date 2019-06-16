@@ -32,5 +32,5 @@ module.exports.info = {
   desc: 'Deletes the quote with the given number from the database.',
   module: 'quotes',
   dm: false,
-  permissions: 8
+  permissions: 8224
 }
