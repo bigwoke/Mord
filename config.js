@@ -11,6 +11,7 @@ const config = {
     quotes: process.env.QUOTES === 'true'
   },
   token: process.env.TOKEN,
+  googleapi: process.env.GOOGLE_API_KEY,
   prefix: process.env.PREFIX || '!'
 }
 
