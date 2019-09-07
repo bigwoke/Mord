@@ -33,10 +33,6 @@ module.exports.run = async (mord, msg, args) => {
       }
 
       result = result.itemListElement[0].result
-      let validType = result['@type'].includes('Person')
-      if (!validType) return console.log('this should not happen')
-
-      console.log(result)
 
       let entity = {
         name: result.name,
