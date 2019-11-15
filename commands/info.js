@@ -10,7 +10,8 @@ module.exports.run = async (mord, msg, args) => {
     .setAuthor('Mord Information Panel', 'http://memerust.tk/files/Mord.png')
     .setTitle('Mord is a multipurpose, semi-modular Discord chat bot.')
     .setDescription('Written from scratch using Node.JS and MongoDB, Mord was ' +
-      'created as a quote-keeping bot, with other useful abilities and features.')
+      'created as a quote-keeping bot, with other useful abilities and features.\n' +
+      `Use ${process.env.PREFIX}commands to discover some ways to interact with Mord.`)
     .addField('Quotekeeping', 'Quotes can be kept from multiple different Discords.')
     .addField('Self-Clearing', 'Simple one-off responses are auto-removed to prevent spam.')
     .addField('Private Messages', 'Commands are accepted via DM where possible, with ' +
