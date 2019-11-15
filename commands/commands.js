@@ -37,8 +37,8 @@ module.exports.run = async (mord, msg, args) => {
 
   msg.channel.send({ embed: cmdEmbed }).then(resp => {
     if (msg.channel.type === 'text') {
-      resp.delete(60000)
-      msg.delete(60000)
+      resp.delete(100000)
+      msg.delete(100000)
     }
   })
 }
