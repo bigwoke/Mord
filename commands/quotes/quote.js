@@ -115,8 +115,8 @@ module.exports.run = async (mord, msg, args) => {
 
 module.exports.info = {
   name: 'quote',
-  usage: `${process.env.PREFIX}quote [number]`,
-  desc: 'Prints a random quote, unless a number is specified.',
+  usage: `${process.env.PREFIX}quote [number | @user | name]`,
+  desc: 'Prints a random quote, unless a number, discord user, or name is specified.',
   module: 'quotes',
   dm: false,
   permissions: 0
