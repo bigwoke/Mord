@@ -34,24 +34,51 @@ function formatDate (q) {
 function getQuote (mord, msg, args, cb) {
   if (args[0]) {
     if (Number.isNaN(parseInt(args[0]))) {
-      return msg.reply('"number" argument is not a number.').then(resp => {
-        resp.delete(3000)
-        msg.delete(3000)
-      })
-    }
+      let lookup = args[0]
+      let query = {}
 
-    let query = { number: parseInt(args[0]) }
-    mord.data.db(msg.guild.id).collection('quotes').findOne(query, (err, res) => {
-      if (err) log.error(`Error getting quote from database: ${err.stack}`)
-      if (res === null) {
-        return msg.reply('There is no quote with that number.').then(resp => {
-          resp.delete(2000)
-          msg.delete(2000)
-        })
+      if (msg.mentions.users.size > 0) {
+        lookup = msg.mentions.users.first()
+        query = { 'author.id': lookup.id }
+      } else {
+        let search = mord.users.find(u =>
+          u.username.toUpperCase() === args[0].toUpperCase() &&
+          msg.guild.members.has(u.id)
+        )
+        if (search !== null) {
+          lookup = search
+          query = { 'author.id': lookup.id }
+        } else {
+          lookup = args[0]
+          query = { author: lookup }
+        }
       }
 
-      cb(res)
-    })
+      mord.data.db(msg.guild.id).collection('quotes').findOne(query, (err, res) => {
+        if (err) log.error(`Error getting quote from database: ${err.stack}`)
+        if (res === null) {
+          return msg.reply('There are no quotes by that author.').then(resp => {
+            resp.delete(2000)
+            msg.delete(2000)
+          })
+        }
+
+        cb(res)
+      })
+    } else {
+      let query = { number: parseInt(args[0]) }
+      mord.data.db(msg.guild.id).collection('quotes').findOne(query, (err, res) => {
+        if (err) log.error(`Error getting quote from database: ${err.stack}`)
+        if (res === null) {
+          return msg.reply('There is no quote with that number.').then(resp => {
+            resp.delete(2000)
+            msg.delete(2000)
+          })
+        }
+
+        cb(res)
+      })
+    }
   } else {
     mord.data.db(msg.guild.id).collection('quotes').aggregate([{ $sample: { size: 1 } }])
       .toArray((err, res) => {
