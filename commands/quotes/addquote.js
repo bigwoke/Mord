@@ -19,10 +19,13 @@ module.exports.run = async (mord, msg, args) => {
 
   if (msg.mentions.users.size > 0) {
     author = msg.mentions.users.first()
-    delete author.lastMessage
+    delete author.lastMessage // prevents cyclic dependency error with mongodb
     delete author.settings
   } else {
-    let lookup = mord.users.find(u => u.username.toUpperCase() === author.toUpperCase())
+    let lookup = mord.users.find(u =>
+      u.username.toUpperCase() === author.toUpperCase() &&
+      msg.guild.members.has(u.id)
+    )
     if (lookup !== null) {
       author = lookup
       delete author.lastMessage
