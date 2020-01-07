@@ -29,7 +29,7 @@ module.exports.run = async (mord, msg, args) => {
 module.exports.info = {
   name: 'delquote',
   usage: `${process.env.PREFIX}delquote <number>`,
-  desc: 'Deletes the quote with the given number from the database. This number is never reused.',
+  desc: 'Deletes the quote with the given number. This number is never reused.',
   module: 'quotes',
   dm: false,
   permissions: 8224

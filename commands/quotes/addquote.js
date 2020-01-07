@@ -77,7 +77,7 @@ module.exports.run = async (mord, msg, args) => {
       if (result && result.result.ok === 1) {
         let name = author.tag ? author.tag : `"${author}"`
         log.info(`Quote #${num} in guild '${msg.guild.name}' added by ${msg.author.tag}`)
-        msg.channel.send(`Quote #${num} by ${name} successfully added to the database.`)
+        msg.channel.send(`Quote #${num} by ${name} added successfully.`)
       }
     })
   })
