@@ -1,5 +1,5 @@
-const log = require('winston')
-const cfg = require('./config.js')
+const log = require('winston');
+const cfg = require('./config.js');
 
 log.configure({
   transports: [
@@ -15,6 +15,6 @@ log.configure({
       level: cfg.loglevel.console
     })
   ]
-})
+});
 
-module.exports = log
+module.exports = log;
