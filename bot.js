@@ -1,3 +1,5 @@
+/* eslint-disable no-magic-numbers, max-statements */
+
 require('dotenv').config()
 const Discord = require('discord.js')
 const fs = require('fs')
@@ -10,17 +12,19 @@ const tools = require('./tools.js')
 const db = require('./db.js')
 
 const mord = new Discord.Client()
+
 mord.commands = new Discord.Collection()
 db.mountData(mord)
 
 tools.getFiles('./commands/').then(files => {
   files = tools.flatArray(files)
-  let cmds = files.filter(f => f.split('.').pop() === 'js')
+  const cmds = files.filter(f => f.split('.').pop() === 'js')
   let count = 0
 
   cmds.forEach(file => {
     try {
-      let cmd = require(path.resolve(file))
+      const cmd = require(path.resolve(file))
+
       if (!cmd.info || !cmd.run) {
         return log.warn(`Not loading ${file} because an issue was encountered.`)
       }
@@ -41,13 +45,16 @@ tools.getFiles('./commands/').then(files => {
   log.info(`Loaded ${count} commands.`)
 })
 
-watch('./commands/', { filter: /\.js$/, recursive: true }, (evt, file) => {
-  let fileName = path.basename(file)
-  delRequireCache(file, fileName)
+watch('./commands/', { filter: /\.js$/u, recursive: true }, (evt, file) => {
+  const fileName = path.basename(file)
 
-  if (fs.existsSync(path.resolve(file))) {
+  const command = fileName.slice(0, -3) // eslint-disable-line no-magic-numbers
+  mord.commands.delete(command)
+  delete require.cache[require.resolve(path.resolve(file))]
+
+  if (fs.existsSync(path.resolve(file))) { // eslint-disable-line no-sync
     try {
-      let cmd = require(path.resolve(file))
+      const cmd = require(path.resolve(file))
 
       if (!cmd.info || !cmd.run) {
         return log.debug(`Cannot load ${file} because it is not a valid Mord command file.`)
@@ -65,12 +72,6 @@ watch('./commands/', { filter: /\.js$/, recursive: true }, (evt, file) => {
       log.warn(`Error autoloading ${file}: ${err.stack}`)
     }
   }
-
-  function delRequireCache (file, name) {
-    let cmd = name.slice(0, -3)
-    mord.commands.delete(cmd)
-    delete require.cache[require.resolve(path.resolve(file))]
-  }
 })
 
 mord.on('ready', () => {
@@ -85,19 +86,19 @@ mord.on('message', msg => {
   if (msg.author.bot) return
   if (!msg.content.startsWith(cfg.prefix)) return
 
-  let args = msg.content.split(/\s+/g)
-  let rawcmd = args[0]
+  let args = msg.content.split(/\s+/ug)
+  const rawcmd = args[0] // eslint-disable-line prefer-destructuring
   args = args.slice(1)
 
-  let cmd = mord.commands.get(rawcmd.slice(cfg.prefix.length))
+  const cmd = mord.commands.get(rawcmd.slice(cfg.prefix.length))
   if (!cmd) return
   if (!cmd.info.dm && msg.channel.type === 'dm') {
     return msg.reply('This command cannot be run via DM.')
   }
 
   if (msg.guild) {
-    let authorPerms = msg.guild.members.find(m => m.user.id === msg.author.id).permissions.bitfield
-    let hasPermission = cmd.info.permissions === 0 || (authorPerms & cmd.info.permissions) !== 0
+    const authorPerms = msg.guild.members.find(m => m.user.id === msg.author.id).permissions.bitfield
+    const hasPermission = cmd.info.permissions === 0 || (authorPerms & cmd.info.permissions) !== 0
 
     if (hasPermission) {
       cmd.run(mord, msg, args)

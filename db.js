@@ -1,4 +1,4 @@
-const MongoClient = require('mongodb').MongoClient
+const { MongoClient } = require('mongodb')
 const cfg = require('./config.js')
 const log = require('./log.js')
 
@@ -10,17 +10,17 @@ function mountData (mord) {
 }
 
 function verifyData (mord, guild) {
-  let quotesIndexSpecs = [{ key: { number: 1 }, unique: true }]
+  const quotesIndexSpecs = [{ key: { number: 1 }, unique: true }]
 
-  mord.data.db(guild.id).collection('quotes').createIndexes(quotesIndexSpecs, (err, res) => {
+  mord.data.db(guild.id).collection('quotes').createIndexes(quotesIndexSpecs, (err) => {
     if (err) log.error(`Error creating 'quotes' collection index: ${err.stack}`)
   })
 }
 
 function getNextSequenceValue (mord, guild, sequenceName, callback) {
-  let query = { _id: sequenceName }
-  let update = { $inc: { sequence_value: 1 } }
-  let options = { returnOriginal: false, upsert: true }
+  const query = { _id: sequenceName }
+  const update = { $inc: { sequence_value: 1 } } // eslint-disable-line camelcase
+  const options = { returnOriginal: false, upsert: true }
 
   mord.data.db(guild.id).collection('counters')
     .findOneAndUpdate(query, update, options, (err, res) => {

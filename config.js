@@ -1,3 +1,4 @@
+/* eslint-disable no-process-env */
 const config = {
   loglevel: {
     console: 'silly',
