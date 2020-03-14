@@ -14,15 +14,33 @@ class MordClient extends AkairoClient {
       directory: './src/listeners/'
     })
 
-    this.listenerHandler.loadAll()
+    this.listenerHandler.setEmitters({
+      listenerHandler: this.listenerHandler
+    }).loadAll()
 
-    this.data = new Data();
-    this.settings = this.data.settings
+    this.data = new Data(this)
   }
 
-  async login (token) {
-    await this.settings.init()
+  login (token) {
     return super.login(token)
+  }
+
+  async setProvider (provider) {
+    const newProvider = await provider
+    this.provider = newProvider
+
+    if (this.readyTimestamp) {
+      await newProvider.init(this);
+      return this.emit('debug', `Provider ${newProvider.constructor.name} initialized.`)
+    }
+
+    this.emit('debug', `Provider set to ${newProvider.constructor.name} - initializing once ready.`)
+    await new Promise(resolve => {
+      this.once('ready', () => {
+        this.emit('debug', 'Initializing provider...')
+        resolve(newProvider.init(this))
+      })
+    })
   }
 }
 
