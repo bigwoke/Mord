@@ -1,4 +1,5 @@
 const { AkairoClient, ListenerHandler } = require('discord-akairo')
+const Data = require('../data.js')
 const cfg = require('../config.js')
 
 class MordClient extends AkairoClient {
@@ -14,6 +15,14 @@ class MordClient extends AkairoClient {
     })
 
     this.listenerHandler.loadAll()
+
+    this.data = new Data();
+    this.settings = this.data.settings
+  }
+
+  async login (token) {
+    await this.settings.init()
+    return super.login(token)
   }
 }
 

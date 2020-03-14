@@ -8,6 +8,11 @@ const config = {
   logging: {
     console: process.env.LOG_CONSOLE || 'silly',
     file: process.env.LOG_FILE
+  },
+  db: {
+    url: process.env.DB_URL,
+    name: process.env.DB_NAME || 'settings',
+    opts: { useNewUrlParser: true, useUnifiedTopology: true }
   }
 }
 
