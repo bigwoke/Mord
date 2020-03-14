@@ -1,20 +1,31 @@
-const log = require('winston');
-const cfg = require('./config.js');
+const log = require('winston')
+const cfg = require('./config.js')
 
-log.configure({
-  transports: [
-    new log.transports.File({
-      filename: 'output.log',
-      timestamp: true,
-      level: cfg.loglevel.file,
-      json: false
-    }),
-    new log.transports.Console({
-      colorize: true,
-      humanReadableUnhandledException: true,
-      level: cfg.loglevel.console
-    })
-  ]
-});
+/**
+ * Setup Winston logging transports based on config.
+ * @returns {Object} Configuration options.
+ */
+function buildLoggerOpts () {
+  const opts = {
+    transports: [
+      new log.transports.Console({
+        colorize: true,
+        humanReadableUnhandledException: true,
+        level: cfg.logging.console
+      }),
+      new log.transports.File({
+        filename: 'output.log',
+        timestamp: true,
+        level: cfg.logging.file,
+        json: false
+      })
+    ]
+  }
 
-module.exports = log;
+  if (!cfg.logging.file) opts.transports.pop()
+  return opts
+}
+
+log.configure(buildLoggerOpts())
+
+module.exports = log
