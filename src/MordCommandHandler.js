@@ -1,0 +1,26 @@
+const { CommandHandler } = require('discord-akairo')
+
+/**
+ * Wrapper class to add additional functionality to command handling.
+ * @extends {CommandHandler}
+ */
+class MordCommandHandler extends CommandHandler {
+
+  /**
+   * Passes command registration to `CommandHandler#register`,
+   * but also adds an emitter when a category is registered.
+   * @param {Command} command - Command to register.
+   * @param {string} filepath - Path to command file.
+   */
+  register (command, filepath) {
+    const originalCategories = this.categories
+    super.register(command, filepath)
+
+    if (originalCategories.size < this.categories.size) {
+      const diff = this.categories.intersect(originalCategories)
+      this.emit('categoryRegister', diff)
+    }
+  }
+}
+
+module.exports = MordCommandHandler
