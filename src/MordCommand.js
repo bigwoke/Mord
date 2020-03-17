@@ -1,5 +1,4 @@
 const { Command } = require('discord-akairo')
-const { Message } = require('discord.js')
 
 /**
  * Extension of Command class made to apply new properties
@@ -18,7 +17,7 @@ class MordCommand extends Command {
      * @type {number}
      * @default 0
      */
-    this.destruct = opts.destruct || 0
+    this.destruct = opts.destruct || null
 
     /**
      * Whether the command is enabled globally.
@@ -29,39 +28,20 @@ class MordCommand extends Command {
   }
 
   /**
-   * Sends a message using the given `message` context.
-   * @param {Message} message - Message prompting the send, for context.
-   * @param {string | Object} content - String to send to the channel or Embed object.
-   * @param {boolean} isReply - Whether message should prepend a user mention.
-   * @returns {Promise<Message>} Promise containing message sent.
+   * Sends a message using Akairo's `CommandUtil` send method.
+   * @param {Message} message - Message object to provide context.
+   * @param {StringResolvable|Object} content - Content to send as a message.
+   * @param {MessageOptions|MessageAdditions} options - Options to apply to content.
+   * @param {boolean} isReply - Whether this message is a reply to a user.
+   * @returns {Promise<(Message|Array<Message>)>} Sent message(s).
    */
-  send (message, content, isReply = false) {
-    let sendType = ''
-    if (typeof content === 'string') sendType = 'content'
-    else if (content instanceof Array) sendType = 'files'
-    else if (content instanceof Object) sendType = 'embed'
-    else throw new RangeError('Message content cannot be empty.')
+  async send (message, content, options = {}, isReply = false) {
+    const resp = isReply
+      ? message.util.reply(content, options)
+      : message.util.send(content, options)
 
-    return message.channel.send({
-      [sendType]: content,
-      reply: isReply ? message.author : null
-    })
-  }
-
-  /**
-   * Removes passed messages based on the `destruct` property of their instance.
-   * @param {...any} args - Message objects to remove.
-   */
-  destructMessages (...args) {
-    if (!this.destruct) return
-    args.forEach(m => {
-      if (m instanceof Message && m.channel.type !== 'dm') {
-        m.delete({
-          timeout: this.destruct,
-          reason: 'command cleanup'
-        })
-      }
-    })
+    message.util.addMessage(await resp)
+    return resp
   }
 }
 
