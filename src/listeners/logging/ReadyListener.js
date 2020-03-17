@@ -1,9 +1,10 @@
 const { Listener } = require('discord-akairo')
-const log = require('../../log.js')
+const log = require('../../../log.js')
 
 class ReadyListener extends Listener {
   constructor () {
     super('ready', {
+      category: 'logging',
       emitter: 'client',
       event: 'ready',
       type: 'once'
