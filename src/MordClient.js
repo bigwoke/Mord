@@ -10,6 +10,9 @@ class MordClient extends AkairoClient {
       { disableMentions: 'everyone' }
     )
 
+    this.data = new Data().connect()
+    this.settings = Data.linkProvider(this.data)
+
     this.commandHandler = new MordCommandHandler(this, {
       directory: './src/commands/',
       prefix: cfg.client.prefix,
@@ -34,26 +37,10 @@ class MordClient extends AkairoClient {
       inhibitorHandler: this.inhibitorHandler,
       listenerHandler: this.listenerHandler
     }).loadAll()
-
-    this.data = new Data(this)
   }
 
-  async setProvider (provider) {
-    const newProvider = await provider
-    this.provider = newProvider
-
-    if (this.readyTimestamp) {
-      await newProvider.init(this)
-      return this.emit('debug', `Provider ${newProvider.constructor.name} initialized.`)
-    }
-
-    this.emit('debug', `Provider set to ${newProvider.constructor.name} - initializing once ready.`)
-    await new Promise(resolve => {
-      this.once('ready', () => {
-        this.emit('debug', 'Initializing provider...')
-        resolve(newProvider.init(this))
-      })
-    })
+  login (token) {
+    this.settings.then(super.login(token))
   }
 }
 
