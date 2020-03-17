@@ -5,15 +5,17 @@ const cfg = require('../config.js')
 
 class MordClient extends AkairoClient {
   constructor () {
-    super({
-      ownerID: cfg.client.ownerID
-    }, {
-      disableMentions: 'everyone'
-    })
+    super(
+      { ownerID: cfg.client.ownerID },
+      { disableMentions: 'everyone' }
+    )
 
     this.commandHandler = new MordCommandHandler(this, {
       directory: './src/commands/',
-      prefix: cfg.client.prefix
+      prefix: cfg.client.prefix,
+      commandUtil: true,
+      handleEdits: true,
+      storeMessages: true
     })
 
     this.inhibitorHandler = new InhibitorHandler(this, { directory: './src/inhibitors/' })
@@ -34,10 +36,6 @@ class MordClient extends AkairoClient {
     }).loadAll()
 
     this.data = new Data(this)
-  }
-
-  login (token) {
-    return super.login(token)
   }
 
   async setProvider (provider) {

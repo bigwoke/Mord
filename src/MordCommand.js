@@ -36,6 +36,7 @@ class MordCommand extends Command {
    * @returns {Promise<(Message|Array<Message>)>} Sent message(s).
    */
   async send (message, content, options = {}, isReply = false) {
+    if (!this.handler.commandUtil) throw new Error('CommandUtil is disabled.')
     const resp = isReply
       ? message.util.reply(content, options)
       : message.util.send(content, options)
