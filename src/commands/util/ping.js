@@ -6,18 +6,21 @@ class PingCommand extends Command {
       aliases: ['ping'],
       category: 'util',
       description: 'Displays round-trip and heartbeat latency.',
+      destruct: 5000,
       cooldown: 5
     })
   }
 
   exec (message) {
-    this.send(message, 'Pong!').then(sent => {
+    return this.send(message, 'Pong!').then(sent => {
       const timeDiff =
         (sent.editedAt || sent.createdAt) -
         (message.editedAt || message.createdAt)
-      return sent.edit('Pong!\n' +
-        `🔂 **RTT**: ${timeDiff} ms\n` +
-        `💟 **Heartbeat**: ${Math.round(this.client.ws.ping)} ms`)
+      return this.send(message, [
+        'Pong!',
+        `🔂 **RTT**: ${timeDiff} ms`,
+        `💟 **Heartbeat**: ${Math.round(this.client.ws.ping)} ms`
+      ])
     })
   }
 }
