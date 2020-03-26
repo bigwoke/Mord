@@ -18,8 +18,8 @@ class MordClient extends AkairoClient {
     )
 
     /**
-     * MongoDB Client instance for direct access to database.
-     * @type {MongoClient}
+     * Data helper object containing setting provider and mongodb connection.
+     * @type {Data}
      */
     this.data = null
 
@@ -50,7 +50,14 @@ class MordClient extends AkairoClient {
       prefix: cfg.client.prefix,
       commandUtil: true,
       handleEdits: true,
-      storeMessages: true
+      storeMessages: true,
+      argumentDefaults: {
+        prompt: {
+          ended: 'Enough tries, done prompting.',
+          cancel: 'Okay fine, I\'ll stop asking.',
+          timeout: 'Try again when you\'re ready.'
+        }
+      }
     })
 
     this.setupData()
@@ -63,8 +70,9 @@ class MordClient extends AkairoClient {
    * @emits MordClient#dataReady - Data and settings are setup.
    */
   async setupData () {
-    this.data = await new Data().connect()
-    this.settings = await Data.linkProvider(this.data)
+    this.data = await new Data()
+    this.settings = await Data.linkProvider(this.data._db)
+    this.settings.init()
     this.emit('dataReady')
   }
 

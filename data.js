@@ -8,24 +8,35 @@ const cfg = require('./config')
  * client with the MongoDB database and setting provider.
  */
 class Data {
+  constructor () {
+    /**
+     * MongoClient connection instance.
+     * @type {MongoClient}
+     * @private
+     */
+    this._db = Data.connect()
+  }
 
   /**
    * Establishes connection with MongoDB database.
    * @returns {Promise<MongoClient>} MongoClient instance.
    */
-  connect () {
+  static connect () {
     return MongoClient.connect(cfg.db.url, cfg.db.opts).then(mongo => {
       log.info('Connected to MongoDB database succesfully.')
       return mongo
     }).catch(err => {
       log.error(`Database connection error:\n${err.errmsg}\n${err.stack}`)
+      throw new Error(`Database connection error:\n${err.errmsg}\n${err.stack}`)
     })
   }
 
   /**
-   * Creates a new setting provider instance with a connected MongoClient.
-   * @param {MongoClient} mongoClient - MongoClient instance to link.
-   * @returns {Promise<MongoDBProvider>} MongoDBProvider instance.
+   * Connects setting provider with bot client.
+   * @param {MongoClient} mongoClient - MongoClient instance with DB connection.
+   * @param {string} dbName - Name of settings database.
+   * @returns {MongoDBProvider} Setting provider.
+   * @static
    */
   static async linkProvider (mongoClient) {
     return new MongoDBProvider(await mongoClient, cfg.db.name)
