@@ -4,8 +4,7 @@ class DisabledGuildInhibitor extends Inhibitor {
   constructor () {
     super('disabledGuild', {
       reason: 'disabledGuild',
-      priority: 1,
-      destruct: 3000
+      priority: 1
     })
   }
 
@@ -14,7 +13,7 @@ class DisabledGuildInhibitor extends Inhibitor {
     if (message.channel.type === 'dm') return false
 
     // If this guild has commands disabled, and this command is one of them, inhibit.
-    const disabledCommands = this.client.settings.get(message.guild.id, 'disabled')
+    const disabledCommands = this.client.settings.get(message.guild.id, 'disabled_cmd')
     if (disabledCommands && disabledCommands[command.id]) return true
   }
 }

@@ -12,12 +12,12 @@ class CommandRegister extends Listener {
   exec (command) {
     const { settings } = command.client
     settings.items.forEach(item => {
-      const isDisabled = item.disabled[command.id]
+      const isDisabled = item.disabled_cmd[command.id]
       if (isDisabled) command.disabledIn.add(command.id)
     })
 
     command.client.on('ready', () => {
-      const disabledCommands = settings.get('global', 'disabled')
+      const disabledCommands = settings.get('global', 'disabled_cmd')
       if (disabledCommands && disabledCommands[command.id]) {
         command.globalEnabled = false
       }

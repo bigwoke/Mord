@@ -52,7 +52,7 @@ class EnableCommand extends Command {
     this.send(message, resp)
     if (result === 'failure') return
 
-    return this.client.settings.set(scope, 'disabled', { [args.cmd.id]: false })
+    return this.client.settings.set(scope, 'disabled_cmd', { [args.cmd.id]: false })
   }
 
   runLogic (message, args, scope) {
