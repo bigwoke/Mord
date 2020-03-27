@@ -15,11 +15,18 @@ class Data {
      * @private
      */
     this._db = Data.connect()
+
+    /**
+     * AkairoClient bot instance.
+     * @type {AkairoClient}
+     */
+    this.client = null
   }
 
   /**
    * Establishes connection with MongoDB database.
    * @returns {Promise<MongoClient>} MongoClient instance.
+   * @static
    */
   static connect () {
     return MongoClient.connect(cfg.db.url, cfg.db.opts).then(mongo => {
@@ -40,6 +47,37 @@ class Data {
    */
   static async linkProvider (mongoClient) {
     return new MongoDBProvider(await mongoClient, cfg.db.name)
+  }
+
+  /**
+   * Loads default data for guilds in the client's view.
+   */
+  loadDefaults () {
+    const guildsCache = this.client.guilds.cache
+
+    this.preloadGuild({ id: 'global' })
+    guildsCache.forEach(guild => this.preloadGuild(guild))
+  }
+
+  /**
+   * Sets all unset default data for a given guild.
+   * @param {Guild|Object} guild - Guild to preconfigure.
+   */
+  preloadGuild (guild) {
+    const { settings, commandHandler } = this.client
+    const settingsCache = this.client.settings.items
+
+    if (!settingsCache.has(guild.id)) settingsCache.set(guild.id, { _id: guild.id })
+    if (guild.id !== 'global') settings.set(guild.id, 'name', guild.name)
+    if (!settings.get(guild.id, 'disabled_cmd')) settings.set(guild.id, 'disabled_cmd', {})
+
+    const disabledCommands = settings.get(guild.id, 'disabled_cmd')
+    commandHandler.modules.forEach(mod => {
+      if (mod.protected) return
+      if (typeof disabledCommands[mod.id] !== 'boolean') {
+        settings.set(guild.id, 'disabled_cmd', { [mod.id]: false })
+      }
+    })
   }
 }
 

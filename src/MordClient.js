@@ -62,6 +62,7 @@ class MordClient extends AkairoClient {
 
     this.setupData()
     this.on('dataReady', () => this.configureHandlers())
+    this.on('ready', () => this.data.loadDefaults())
   }
 
   /**
@@ -71,6 +72,7 @@ class MordClient extends AkairoClient {
    */
   async setupData () {
     this.data = await new Data()
+    Object.defineProperty(this.data, 'client', { value: this })
     this.settings = await Data.linkProvider(this.data._db)
     this.settings.init()
     this.emit('dataReady')
