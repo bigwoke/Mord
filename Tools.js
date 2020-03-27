@@ -33,6 +33,10 @@ class Tools {
       })
     }
   }
+
+  static isDM (message) {
+    return message.channel.type === 'dm'
+  }
 }
 
 module.exports = Tools
