@@ -1,5 +1,6 @@
 const { Listener } = require('discord-akairo')
 const { Message } = require('discord.js')
+const { isPromise } = require('../../../Tools.js')
 
 class CommandFinishedListener extends Listener {
   constructor () {
@@ -13,9 +14,10 @@ class CommandFinishedListener extends Listener {
     message.util.addMessage(message)
 
     if (!command.destruct) return
-    message.util.messages.forEach(m => {
-      if (m instanceof Message && m.channel.type !== 'dm') {
-        m.delete({
+    message.util.messages.forEach(async msg => {
+      if (isPromise(msg)) msg = await msg
+      if (msg instanceof Message && msg.channel.type !== 'dm') {
+        msg.delete({
           timeout: command.destruct,
           reason: 'command cleanup'
         })
