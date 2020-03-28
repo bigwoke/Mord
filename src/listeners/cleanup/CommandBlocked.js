@@ -1,7 +1,7 @@
 const Listener = require('../../MordListener.js')
 const log = require('../../../log.js')
 
-class CommandBreakoutListener extends Listener {
+class CommandBlockedListener extends Listener {
   constructor () {
     super('commandBlocked', {
       emitter: 'commandHandler',
@@ -11,7 +11,7 @@ class CommandBreakoutListener extends Listener {
   }
 
   exec (message, command, reason) {
-    const source = message.channel === 'dm'
+    const source = message.channel.type === 'dm'
       ? `DM with ${message.author.tag}`
       : `channel '${message.channel.name}' of guild '${message.guild.name}'`
     log.silly(`Command '${command.id}' blocked in ${source} because '${reason}'`)
@@ -26,4 +26,4 @@ class CommandBreakoutListener extends Listener {
   }
 }
 
-module.exports = CommandBreakoutListener
+module.exports = CommandBlockedListener

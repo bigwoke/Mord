@@ -1,7 +1,7 @@
 const { Listener } = require('discord-akairo')
 const log = require('../../../log.js')
 
-class CommandRegister extends Listener {
+class CommandRegisterListener extends Listener {
   constructor () {
     super('commandRegister', {
       emitter: 'commandHandler',
@@ -35,4 +35,4 @@ class CommandRegister extends Listener {
   }
 }
 
-module.exports = CommandRegister
+module.exports = CommandRegisterListener
