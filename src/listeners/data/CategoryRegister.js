@@ -10,7 +10,7 @@ class CategoryRegisterListener extends Listener {
   }
 
   exec (category) {
-    Object.defineProperty(category, 'disabledIn', { value: new Set() })
+    Object.defineProperty(category, 'disabledIn', { value: new Set(), writable: true })
     Object.defineProperty(category, 'globalEnabled', { value: true, writable: true })
 
     this.client.on('ready', () => {
