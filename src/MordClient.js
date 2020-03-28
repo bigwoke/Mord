@@ -61,7 +61,10 @@ class MordClient extends AkairoClient {
     })
 
     this.setupData()
-    this.on('dataReady', () => this.configureHandlers())
+    this.on('dataReady', () => {
+      this.configureHandlers()
+      this.addArgumentTypes()
+    })
     this.on('ready', () => this.data.loadDefaults())
   }
 
@@ -98,6 +101,16 @@ class MordClient extends AkairoClient {
       .useInhibitorHandler(this.inhibitorHandler)
       .useListenerHandler(this.listenerHandler)
       .loadAll()
+  }
+
+  /**
+   * Adds custom argument types to the command handler TypeResolver.
+   */
+  addArgumentTypes () {
+    this.commandHandler.resolver.addType('category', (message, phrase) => {
+      if (!phrase) return null
+      return this.commandHandler.categories.get(phrase.toLowerCase())
+    })
   }
 }
 

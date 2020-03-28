@@ -16,11 +16,11 @@ class DisableCommand extends Command {
       userPermissions: 'ADMINISTRATOR',
       args: [
         {
-          id: 'cmd',
-          type: Argument.union('command', 'commandAlias'),
+          id: 'mod',
+          type: Argument.union('category', 'command', 'commandAlias'),
           prompt: {
-            start: 'Which command do you want to disable?',
-            retry: 'That command does not exist.'
+            start: 'Which command or category do you want to disable?',
+            retry: 'That command or category does not exist, try again.'
           }
         },
         {
@@ -33,39 +33,50 @@ class DisableCommand extends Command {
   }
 
   exec (message, args) {
+    const type = args.mod instanceof Command ? 'command' : 'category'
     const scope = this.getScope(message, args)
     if (!scope) return
 
     const responses = {
-      prot: `Sorry, the \`${args.cmd.id}\` command is protected and can't be disabled.`,
-      disabledGlobally: `\`${args.cmd.id}\` is already disabled globally.`,
-      warning: '\nThis command is disabled globally, so in the instance that it is ' +
+      prot: `Sorry, the \`${args.mod.id}\` ${type} is protected and can't be disabled.`,
+      disabledGlobally: `The \`${args.mod.id}\` ${type} is already disabled globally.`,
+      warning: `\nThis ${type} is disabled globally, so in the instance that it is ` +
         'enabled in a global scope, it will remain disabled here.',
-      success: `The \`${args.cmd.id}\` command is now disabled ` +
+      success: `The \`${args.mod.id}\` ${type} is now disabled ` +
         `${scope === 'global' ? 'globally' : `in ${message.guild.name}`}.`,
-      failure: `\`${args.cmd.id}\` is already disabled ` +
+      failure: `The \`${args.mod.id}\` ${type} is already disabled ` +
         `${scope === 'global' ? 'globally' : `in ${message.guild.name}`}.`
     }
 
-    if (args.cmd.protected) return this.send(message, responses.prot)
+    if (this.modIsProtected(args)) return this.send(message, responses.prot)
 
     const result = this.runLogic(message, args, scope)
-    let resp = responses[result]
+    const resp = scope !== 'global' && !args.mod.globalEnabled
+      ? responses[result] + responses.warning
+      : responses[result]
 
-    if (scope !== 'global' && !args.cmd.globalEnabled) resp += responses.warning
     this.send(message, resp)
-    if (result === 'failure') return
 
-    return this.client.settings.set(scope, 'disabled_cmd', { [args.cmd.id]: true })
+    if (result === 'failure') return
+    return this.client.settings.set(
+      scope,
+      type === 'command' ? 'disabled_cmd' : 'disabled_cat',
+      { [args.mod.id]: true }
+    )
+  }
+
+  modIsProtected (args) {
+    const protectedInCategory = args.mod.some && args.mod.some(cmd => cmd.protected)
+    return args.mod.protected || protectedInCategory
   }
 
   runLogic (message, args, scope) {
-    if (scope === 'global' && args.cmd.globalEnabled) {
-      args.cmd.globalEnabled = false
+    if (scope === 'global' && args.mod.globalEnabled) {
+      args.mod.globalEnabled = false
       return 'success'
     }
-    if (!args.cmd.disabledIn.has(message.guild.id)) {
-      args.cmd.disabledIn.add(message.guild.id)
+    if (!args.mod.disabledIn.has(message.guild.id)) {
+      args.mod.disabledIn.add(message.guild.id)
       return 'success'
     }
     return 'failure'

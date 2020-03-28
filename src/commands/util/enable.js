@@ -16,11 +16,11 @@ class EnableCommand extends Command {
       userPermissions: 'ADMINISTRATOR',
       args: [
         {
-          id: 'cmd',
-          type: Argument.union('command', 'commandAlias'),
+          id: 'mod',
+          type: Argument.union('category', 'command', 'commandAlias'),
           prompt: {
-            start: 'Which command do you want to enable?',
-            retry: 'That command does not exist.'
+            start: 'Which command or category do you want to enable?',
+            retry: 'That command or category does not exist, try again.'
           }
         },
         {
@@ -33,35 +33,41 @@ class EnableCommand extends Command {
   }
 
   exec (message, args) {
+    const type = args.mod instanceof Command ? 'command' : 'category'
     const scope = this.getScope(message, args)
     if (!scope) return
 
     const responses = {
-      warning: '\nThis command is disabled globally, so it will remain ' +
+      warning: `\nThis ${type} is disabled globally, so it will remain ` +
         'unusable until it is enabled in a global scope.',
-      success: `The \`${args.cmd.id}\` command is now enabled for use ` +
+      success: `The \`${args.mod.id}\` ${type} is now enabled for use ` +
         `${scope === 'global' ? 'globally' : `in ${message.guild.name}`}.`,
-      failure: `\`${args.cmd.id}\` is already enabled for use ` +
+      failure: `The \`${args.mod.id}\` ${type} is already enabled for use ` +
         `${scope === 'global' ? 'globally' : `in ${message.guild.name}`}.`
     }
 
     const result = this.runLogic(message, args, scope)
-    let resp = responses[result]
+    const resp = scope !== 'global' && !args.mod.globalEnabled
+      ? responses[result] + responses.warning
+      : responses[result]
 
-    if (scope !== 'global' && !args.cmd.globalEnabled) resp += responses.warning
     this.send(message, resp)
     if (result === 'failure') return
 
-    return this.client.settings.set(scope, 'disabled_cmd', { [args.cmd.id]: false })
+    return this.client.settings.set(
+      scope,
+      type === 'command' ? 'disabled_cmd' : 'disabled_cat',
+      { [args.mod.id]: true }
+    )
   }
 
   runLogic (message, args, scope) {
-    if (scope === 'global' && !args.cmd.globalEnabled) {
-      args.cmd.globalEnabled = true
+    if (scope === 'global' && !args.mod.globalEnabled) {
+      args.mod.globalEnabled = true
       return 'success'
     }
-    if (args.cmd.disabledIn.has(message.guild.id)) {
-      args.cmd.disabledIn.delete(message.guild.id)
+    if (args.mod.disabledIn.has(message.guild.id)) {
+      args.mod.disabledIn.delete(message.guild.id)
       return 'success'
     }
     return 'failure'
