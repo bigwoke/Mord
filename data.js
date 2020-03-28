@@ -70,12 +70,20 @@ class Data {
     if (!settingsCache.has(guild.id)) settingsCache.set(guild.id, { _id: guild.id })
     if (guild.id !== 'global') settings.set(guild.id, 'name', guild.name)
     if (!settings.get(guild.id, 'disabled_cmd')) settings.set(guild.id, 'disabled_cmd', {})
+    if (!settings.get(guild.id, 'disabled_cat')) settings.set(guild.id, 'disabled_cat', {})
 
     const disabledCommands = settings.get(guild.id, 'disabled_cmd')
     commandHandler.modules.forEach(mod => {
       if (mod.protected) return
       if (typeof disabledCommands[mod.id] !== 'boolean') {
         settings.set(guild.id, 'disabled_cmd', { [mod.id]: false })
+      }
+    })
+
+    const disabledCategories = settings.get(guild.id, 'disabled_cat')
+    commandHandler.categories.forEach(cat => {
+      if (typeof disabledCategories[cat.id] !== 'boolean') {
+        settings.set(guild.id, 'disabled_cat', { [cat.id]: false })
       }
     })
   }
