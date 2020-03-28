@@ -9,7 +9,8 @@ class CommandDisabledGlobalInhibitor extends Inhibitor {
   }
 
   exec (message, command) {
-    return !command.globalEnabled
+    const disabledCommands = this.client.settings.get('global', 'disabled_cmd')
+    return disabledCommands[command.id] === true
   }
 }
 

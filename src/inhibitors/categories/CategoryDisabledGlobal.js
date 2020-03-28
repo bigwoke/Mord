@@ -9,7 +9,8 @@ class CategoryDisabledGlobalInhibitor extends Inhibitor {
   }
 
   exec (message, command) {
-    return !command.category.globalEnabled
+    const disabledCategories = this.client.settings.get('global', 'disabled_cat')
+    return disabledCategories[command.category.id] === true
   }
 }
 
