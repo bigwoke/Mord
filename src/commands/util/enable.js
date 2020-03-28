@@ -36,29 +36,16 @@ class EnableCommand extends Command {
   }
 
   exec (message, args) {
-    // Set type of module to enable and get scope of this command.
-    const type = args.mod instanceof Command ? 'command' : 'category'
+    // Get effective scope of this command.
     const scope = this.getScope(message, args)
     if (!scope) return
 
     // If the user gave an 'all' wildcard (command/category), just enable all.
     if (args.mod.includes && args.mod.includes('*')) return this.enableAll(message, args, scope)
 
-    // Get responses and put together + send the appropriate end response.
-    const responses = EnableCommand.getResponses(message, args, type, scope)
+    // Enable command/category if necessary, send end message.
     const result = this.runLogic(message, args, scope)
-    const resp = scope !== 'global' && !args.mod.globalEnabled
-      ? responses[result] + responses.warning
-      : responses[result]
-    this.send(message, resp)
-
-    // Enable the command if it should be, otherwise return.
-    if (result === 'failure') return
-    return this.client.settings.set(
-      scope,
-      type === 'command' ? 'disabled_cmd' : 'disabled_cat',
-      { [args.mod.id]: false }
-    )
+    return this.sendResponse(message, args, scope, result)
   }
 
   /**
@@ -69,24 +56,29 @@ class EnableCommand extends Command {
    * @returns {Promise<Message>}
    */
   enableAll (message, args, scope) {
+    // Set collection to enable, data key, and type based on input.
+    const collToEnable = args.mod === '*' ? this.handler.modules : this.handler.categories
+    const dataKey = args.mod === '*' ? 'disabled_cmd' : 'disabled_cat'
     const type = args.mod === '*' ? 'command' : 'category'
-    const { settings } = this.client
-    const { modules, categories } = this.handler
 
-    if (type === 'command') {
-      modules.forEach(cmd => {
-        if (cmd.disabledIn.has(scope)) cmd.disabledIn.delete(message.guild.id)
-        settings.set(scope, 'disabled_cmd', { [cmd]: false })
-      })
-    }
-    if (type === 'category') {
-      categories.forEach(cat => {
-        if (cat.disabledIn.has(scope)) cat.disabledIn.delete(message.guild.id)
-        settings.set(scope, 'disabled_cat', { [cat]: false })
-      })
+    // Every module with a current true (disabled) value is enabled.
+    const disabledModules = this.client.settings.get(scope, dataKey)
+    for (const mod of collToEnable) {
+      if (disabledModules[mod.id] === true) this.enableModule(scope, dataKey, mod)
     }
 
     return this.send(message, EnableCommand.getResponses(message, args, type, scope).all)
+  }
+
+  /**
+   * Enables a command using the given scope, key, and module
+   * @param {string} scope - Where the command impacts, global or guild ID.
+   * @param {string} dataKey - Key to set data for, `disabled_cmd` or `disabled_cat`.
+   * @param {Command|Category} mod - Command or Category to enable.
+   * @returns {Promise}
+   */
+  enableModule (scope, dataKey, mod) {
+    return this.client.settings.set(scope, dataKey, { [mod.id]: false })
   }
 
   /**
@@ -112,15 +104,34 @@ class EnableCommand extends Command {
    * @returns {string} 'success' or 'failure' result from enabling.
    */
   runLogic (message, args, scope) {
-    if (scope === 'global' && !args.mod.globalEnabled) {
-      args.mod.globalEnabled = true
-      return 'success'
-    }
-    if (args.mod.disabledIn.has(message.guild.id)) {
-      args.mod.disabledIn.delete(message.guild.id)
+    const dataKey = args.mod instanceof Command ? 'disabled_cmd' : 'disabled_cat'
+    const disabledModules = this.client.settings.get(scope, dataKey)
+
+    if (disabledModules[args.mod.id] === true) {
+      this.enableModule(scope, dataKey, args.mod)
       return 'success'
     }
     return 'failure'
+  }
+
+  /**
+   * Sends the end response to the user to reflect changes made.
+   * @param {Message} message - Prompting message used for context.
+   * @param {Object} args - Parsed arguments from the command.
+   * @param {string} scope - Where the command impacts, global or guild ID.
+   * @param {string} result - Result of prior command processing.
+   * @returns {Promise<Message>}
+   */
+  sendResponse (message, args, scope, result) {
+    const type = args.mod instanceof Command ? 'command' : 'category'
+    const dataKey = args.mod instanceof Command ? 'disabled_cmd' : 'disabled_cat'
+    const responses = EnableCommand.getResponses(message, args, type, scope)
+
+    const globalEnabled = this.client.settings.get('global', dataKey)[args.mod.id] === false
+    const resp = scope !== 'global' && !globalEnabled
+      ? responses[result] + responses.warning
+      : responses[result]
+    return this.send(message, resp)
   }
 
   /**

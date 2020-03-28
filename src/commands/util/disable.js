@@ -35,28 +35,15 @@ class DisableCommand extends Command {
   }
 
   exec (message, args) {
-    // Set type of module to disable and get scope of command.
-    const type = args.mod instanceof Command ? 'command' : 'category'
+    // Get effective scope of command.
     const scope = this.getScope(message, args)
     if (!scope) return
 
-    const responses = DisableCommand.getResponses(message, args, type, scope)
-    if (this.modIsProtected(args)) return this.send(message, responses.prot)
+    if (this.modIsProtected(args)) return this.sendResponse(message, args, scope, 'prot')
 
-    // Determine whether the command should be disabled, respond accordingly.
+    // Disable the command if needed, respond accordingly.
     const result = this.runLogic(message, args, scope)
-    const resp = scope !== 'global' && !args.mod.globalEnabled
-      ? responses[result] + responses.warning
-      : responses[result]
-    this.send(message, resp)
-
-    // If the command needs to be disabled, do it. Return otherwise.
-    if (result === 'failure') return
-    return this.client.settings.set(
-      scope,
-      type === 'command' ? 'disabled_cmd' : 'disabled_cat',
-      { [args.mod.id]: true }
-    )
+    return this.sendResponse(message, args, scope, result)
   }
 
   /**
@@ -92,15 +79,36 @@ class DisableCommand extends Command {
    * @returns {string} 'success' or 'failure' result from disabling.
    */
   runLogic (message, args, scope) {
-    if (scope === 'global' && args.mod.globalEnabled) {
-      args.mod.globalEnabled = false
-      return 'success'
-    }
-    if (!args.mod.disabledIn.has(message.guild.id)) {
-      args.mod.disabledIn.add(message.guild.id)
+    const dataKey = args.mod instanceof Command ? 'disabled_cmd' : 'disabled_cat'
+    const disabledModules = this.client.settings.get(scope, dataKey)
+
+    if (disabledModules[args.mod.id] === false) {
+      this.client.settings.set(scope, dataKey, { [args.mod.id]: true })
       return 'success'
     }
     return 'failure'
+  }
+
+  /**
+   * Sends the end response to the user to reflect changes made.
+   * @param {Message} message - Prompting message used for context.
+   * @param {Object} args - Parsed arguments from the command.
+   * @param {string} scope - Where the command impacts, global or guild ID.
+   * @param {string} result - Result of prior command processing.
+   * @returns {Promise<Message>}
+   */
+  sendResponse (message, args, scope, result) {
+    const type = args.mod instanceof Command ? 'command' : 'category'
+    const dataKey = args.mod instanceof Command ? 'disabled_cmd' : 'disabled_cat'
+    const responses = DisableCommand.getResponses(message, args, type, scope)
+    if (result === 'prot') return this.send(message, responses[result])
+
+    const globalEnabled = this.client.settings.get('global', dataKey)[args.mod.id] === false
+    const resp = scope !== 'global' && !globalEnabled
+      ? responses[result] + responses.warning
+      : responses[result]
+    return this.send(message, resp)
+
   }
 
   /**
@@ -128,7 +136,6 @@ class DisableCommand extends Command {
   static getResponses (message, args, type, scope) {
     return {
       prot: `Sorry, the \`${args.mod.id}\` ${type} is protected and can't be disabled.`,
-      disabledGlobally: `The \`${args.mod.id}\` ${type} is already disabled globally.`,
       warning: `\nThis ${type} is disabled globally, so in the instance that it is ` +
         'enabled in a global scope, it will remain disabled here.',
       success: `The \`${args.mod.id}\` ${type} is now disabled ` +
