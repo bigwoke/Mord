@@ -13,12 +13,12 @@ class MordCommandHandler extends CommandHandler {
    * @param {string} filepath - Path to command file.
    */
   register (command, filepath) {
-    const originalCategories = this.categories
+    const originalCategories = this.categories.clone()
     super.register(command, filepath)
 
     if (originalCategories.size < this.categories.size) {
-      const diff = this.categories.intersect(originalCategories)
-      this.emit('categoryRegister', diff)
+      const diff = this.categories.difference(originalCategories)
+      this.emit('categoryRegister', diff.first())
     }
   }
 }
