@@ -33,13 +33,19 @@ class MordClient extends AkairoClient {
      * Handler for listeners. Available via `handler` property in listeners.
      * @type {ListenerHandler}
      */
-    this.listenerHandler = new ListenerHandler(this, { directory: './src/listeners/' })
+    this.listenerHandler = new ListenerHandler(this, {
+      directory: './src/listeners/',
+      automateCategories: true
+    })
 
     /**
      * Handler for inhibitors, available via `handler` property in inhibitors.
      * @type {InhibitorHandler}
      */
-    this.inhibitorHandler = new InhibitorHandler(this, { directory: './src/inhibitors/' })
+    this.inhibitorHandler = new InhibitorHandler(this, {
+      directory: './src/inhibitors/',
+      automateCategories: true
+    })
 
     /**
      * Custom handler for commands. Available via `handler` property in commands.
