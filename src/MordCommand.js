@@ -20,24 +20,11 @@ class MordCommand extends Command {
     this.destruct = opts.destruct || null
 
     /**
-     * Guilds in which this command is disabled.
-     * @type {Set}
-     */
-    this.disabledIn = new Set()
-
-    /**
      * Whether this command should be protected from disabling.
      * @type {boolean}
      * @default false
      */
     this.protected = opts.protected || false
-
-    /**
-     * Whether the command is enabled globally.
-     * @type {boolean}
-     * @private
-     */
-    this._globalEnabled = true
   }
 
   /**
@@ -56,17 +43,6 @@ class MordCommand extends Command {
 
     message.util.addMessage(resp)
     return resp
-  }
-
-  get globalEnabled () {
-    return this._globalEnabled
-  }
-
-  set globalEnabled (enabled) {
-    if (typeof enabled !== 'boolean') {
-      throw new TypeError('globalEnabled must be a boolean.')
-    }
-    this._globalEnabled = enabled
   }
 }
 
