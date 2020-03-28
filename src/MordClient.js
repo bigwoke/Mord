@@ -83,8 +83,7 @@ class MordClient extends AkairoClient {
     this.data = await new Data()
     Object.defineProperty(this.data, 'client', { value: this })
     this.settings = await Data.linkProvider(this.data._db)
-    this.settings.init()
-    this.emit('dataReady')
+    this.settings.init().then(() => this.emit('dataReady'))
   }
 
   /**
