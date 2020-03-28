@@ -1,9 +1,9 @@
-const Inhibitor = require('../MordInhibitor.js')
+const Inhibitor = require('../../MordInhibitor.js')
 
-class DisabledGuildInhibitor extends Inhibitor {
+class CommandDisabledGuildInhibitor extends Inhibitor {
   constructor () {
-    super('disabledGuild', {
-      reason: 'disabledGuild',
+    super('commandDisabledGuild', {
+      reason: 'commandDisabledGuild',
       priority: 1
     })
   }
@@ -18,4 +18,4 @@ class DisabledGuildInhibitor extends Inhibitor {
   }
 }
 
-module.exports = DisabledGuildInhibitor
+module.exports = CommandDisabledGuildInhibitor
