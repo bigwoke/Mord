@@ -68,14 +68,14 @@ class Data {
     this.prepGuild(guild)
 
     const disabledCommands = settings.get(guild.id, 'disabled_cmd')
-    for (const mod of commandHandler.modules) {
+    for (const mod of commandHandler.modules.values()) {
       if (!mod.protected && typeof disabledCommands[mod.id] !== 'boolean') {
         settings.set(guild.id, 'disabled_cmd', { [mod.id]: false })
       }
     }
 
     const disabledCategories = settings.get(guild.id, 'disabled_cat')
-    for (const cat of commandHandler.categories) {
+    for (const cat of commandHandler.categories.values()) {
       if (typeof disabledCategories[cat.id] !== 'boolean') {
         settings.set(guild.id, 'disabled_cat', { [cat.id]: false })
       }
