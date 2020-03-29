@@ -86,6 +86,3 @@ class Data {
 }
 
 module.exports = Data
-
-// YO
-// THIS SHIT IS MEGA FUCKED
