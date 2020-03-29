@@ -65,39 +65,27 @@ class Data {
    */
   preloadGuild (guild) {
     const { settings, commandHandler } = this.client
-    this.prepGuild(guild)
 
-    const disabledCommands = settings.get(guild.id, 'disabled_cmd')
+    // If settings cache does not have a guild, set its name.
+    if (!settings.items.has(guild.id)) settings.set(guild.id, 'name', guild.name || 'global')
+
+    const disabledCommands = settings.get(guild.id, 'disabled_cmd', {})
     for (const mod of commandHandler.modules.values()) {
       if (!mod.protected && typeof disabledCommands[mod.id] !== 'boolean') {
         settings.set(guild.id, 'disabled_cmd', { [mod.id]: false })
       }
     }
 
-    const disabledCategories = settings.get(guild.id, 'disabled_cat')
+    const disabledCategories = settings.get(guild.id, 'disabled_cat', {})
     for (const cat of commandHandler.categories.values()) {
       if (typeof disabledCategories[cat.id] !== 'boolean') {
         settings.set(guild.id, 'disabled_cat', { [cat.id]: false })
       }
     }
   }
-
-  /**
-   * Ensure that a guild has all necessary keys before populating them with defaults.
-   * @param {Guild} guild - Guild to prepare.
-   */
-  prepGuild (guild) {
-    const { settings } = this.client
-    const settingsCache = this.client.settings.items
-
-    // If settings cache does not have a guild, set it and its name if not global.
-    if (!settingsCache.has(guild.id)) settingsCache.set(guild.id, { _id: guild.id })
-    if (guild.id !== 'global') settings.set(guild.id, 'name', guild.name)
-
-    // If guild doesn't have disabled commands/categories objects, set them.
-    if (!settings.get(guild.id, 'disabled_cmd')) settings.set(guild.id, 'disabled_cmd', {})
-    if (!settings.get(guild.id, 'disabled_cat')) settings.set(guild.id, 'disabled_cat', {})
-  }
 }
 
 module.exports = Data
+
+// YO
+// THIS SHIT IS MEGA FUCKED
