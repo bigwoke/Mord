@@ -1,4 +1,4 @@
-const { Listener } = require('discord-akairo')
+const Listener = require('../../types/MordListener.js')
 const { Message } = require('discord.js')
 
 class CommandCancelledListener extends Listener {

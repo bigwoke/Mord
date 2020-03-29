@@ -1,5 +1,5 @@
-const Listener = require('../../MordListener.js')
-const log = require('../../../log.js')
+const Listener = require('../../types/MordListener.js')
+const log = require('../../helpers/log.js')
 
 class CommandBlockedListener extends Listener {
   constructor () {

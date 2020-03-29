@@ -1,6 +1,6 @@
-const { Listener } = require('discord-akairo')
+const Listener = require('../../types/MordListener.js')
 const { Message } = require('discord.js')
-const { isPromise } = require('../../../Tools.js')
+const { isPromise } = require('../../helpers/Tools.js')
 
 class CommandFinishedListener extends Listener {
   constructor () {

@@ -1,19 +1,19 @@
-const { Listener } = require('discord-akairo')
-const { destructMessage } = require('../Tools.js')
+const { Inhibitor } = require('discord-akairo')
+const { destructMessage } = require('../helpers/Tools.js')
 
 /**
- * Extension of Listener class made to apply new properties that help
+ * Extension of Inhibitor class made to apply new properties that help
  * send and track messages, then optionally remove these messages.
- * @param {string} id - Listener ID.
- * @param {ListenerOptions} [options={}] - Options for the listener.
- * @extends {Listener}
+ * @param {string} id - Inhibitor ID.
+ * @param {InhibitorOptions} [options={}] - Options for the inhibitor.
+ * @extends {Inhibitor}
  */
-class MordListener extends Listener {
+class MordInhibitor extends Inhibitor {
   constructor (id, opts) {
     super(id, opts)
 
     /**
-     * Whether messages sent by the listener should self-destruct.
+     * Whether messages sent by the inhibitor should self-destruct.
      * Falsey for never, otherwise time in ms.
      * @type {number}
      * @default null
@@ -42,4 +42,4 @@ class MordListener extends Listener {
   }
 }
 
-module.exports = MordListener
+module.exports = MordInhibitor

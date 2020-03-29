@@ -1,5 +1,5 @@
 const { Argument } = require('discord-akairo')
-const Command = require('../../MordCommand.js')
+const Command = require('../../types/MordCommand.js')
 
 class ReloadCommand extends Command {
   constructor () {

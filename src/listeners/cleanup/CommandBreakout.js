@@ -1,4 +1,4 @@
-const { Listener } = require('discord-akairo')
+const Listener = require('../../types/MordListener.js')
 
 /*
  * Akairo constant object is missing COMMAND_BREAKOUT object

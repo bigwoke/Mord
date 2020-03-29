@@ -1,6 +1,6 @@
 const { Argument } = require('discord-akairo')
-const Command = require('../../MordCommand.js')
-const { isDM } = require('../../../Tools.js')
+const Command = require('../../types/MordCommand.js')
+const { isDM } = require('../../helpers/Tools.js')
 
 class EnableCommand extends Command {
   constructor () {

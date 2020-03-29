@@ -1,5 +1,5 @@
 const log = require('winston')
-const cfg = require('./config.js')
+const cfg = require('../../config.js')
 
 /**
  * Setup Winston logging transports based on config.
@@ -14,7 +14,7 @@ function buildLoggerOpts () {
         level: cfg.logging.console
       }),
       new log.transports.File({
-        filename: 'output.log',
+        filename: '../../output.log',
         timestamp: true,
         level: cfg.logging.file,
         json: false

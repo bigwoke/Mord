@@ -1,5 +1,5 @@
-const { Listener } = require('discord-akairo')
-const log = require('../../../log.js')
+const Listener = require('../../types/MordListener.js')
+const log = require('../../helpers/log.js')
 
 class CategoryRegisterListener extends Listener {
   constructor () {
