@@ -37,12 +37,12 @@ class Tools {
 
   /**
    * Determine whether a module is protected or is a category containing one.
-   * @param {AkairoModule|Category} module - Module or Category to check.
+   * @param {AkairoModule|Category} mod - Module or Category to check.
    * @returns {boolean}
    */
-  static isProtected (module) {
-    const protectedInCategory = module.some && module.some(mod => mod.protected)
-    return module.protected || protectedInCategory
+  static isProtected (mod) {
+    const protectedInCategory = mod.some && mod.some(m => m.protected)
+    return mod.protected || protectedInCategory
   }
 
   /**
