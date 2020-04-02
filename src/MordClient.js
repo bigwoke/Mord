@@ -21,7 +21,7 @@ class MordClient extends AkairoClient {
      * Data helper object containing setting provider and mongodb connection.
      * @type {Data}
      */
-    this.data = null
+    this.data = new Data(this, Data.connect())
 
     /**
      * MongoDB settings provider instance for configuration persistence.
@@ -66,12 +66,12 @@ class MordClient extends AkairoClient {
       }
     })
 
-    this.setupData()
+    this.initSettings()
     this.on('dataReady', () => {
       this.configureHandlers()
       this.addArgumentTypes()
     })
-    this.on('ready', () => this.data.loadDefaults())
+    this.on('ready', () => this.data.setupCurrentGuilds())
   }
 
   /**
@@ -79,10 +79,8 @@ class MordClient extends AkairoClient {
    * connecting to the database and linking data provider.
    * @emits MordClient#dataReady - Data and settings are setup.
    */
-  async setupData () {
-    this.data = await new Data()
-    Object.defineProperty(this.data, 'client', { value: this })
-    this.settings = await Data.linkProvider(this.data._db)
+  async initSettings () {
+    this.settings = await Data.linkProvider(this.data.db)
     this.settings.init()
     this.emit('dataReady')
   }

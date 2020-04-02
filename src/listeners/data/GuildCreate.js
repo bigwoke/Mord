@@ -11,7 +11,7 @@ class GuildCreateListener extends Listener {
 
   exec (guild) {
     log.verbose(`Joined guild ${guild.name} (${guild.id}).`)
-    this.client.data.preloadGuild(guild)
+    this.client.data.setupGuild(guild)
   }
 }
 
