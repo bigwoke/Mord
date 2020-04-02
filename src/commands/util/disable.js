@@ -1,6 +1,6 @@
 const { Argument } = require('discord-akairo')
 const Command = require('../../types/MordCommand.js')
-const { isDM } = require('../../helpers/Tools.js')
+const { isDM, isProtected } = require('../../helpers/Tools.js')
 
 class DisableCommand extends Command {
   constructor () {
@@ -39,7 +39,7 @@ class DisableCommand extends Command {
     const scope = this.getScope(message, args)
     if (!scope) return
 
-    if (this.modIsProtected(args)) return this.sendResponse(message, args, scope, 'prot')
+    if (isProtected(args)) return this.sendResponse(message, args, scope, 'prot')
 
     // Disable the command if needed, respond accordingly.
     const result = this.runLogic(message, args, scope)
@@ -59,16 +59,6 @@ class DisableCommand extends Command {
     }
     if (message.channel.type === 'text') return message.guild.id
     return null
-  }
-
-  /**
-   * Determine whether a command is protected or a category contains one that is.
-   * @param {Object} args - Parsed arguments from the command.
-   * @returns {boolean}
-   */
-  modIsProtected (args) {
-    const protectedInCategory = args.mod.some && args.mod.some(cmd => cmd.protected)
-    return args.mod.protected || protectedInCategory
   }
 
   /**
