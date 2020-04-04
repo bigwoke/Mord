@@ -53,10 +53,13 @@ class MordClient extends AkairoClient {
      */
     this.commandHandler = new MordCommandHandler(this, {
       directory: './src/commands/',
-      prefix: cfg.client.prefix,
       commandUtil: true,
       handleEdits: true,
       storeMessages: true,
+      prefix: m => this.settings.get(
+        m.guild.id, 'prefix',
+        this.settings.get('global', 'prefix')
+      ),
       argumentDefaults: {
         prompt: {
           ended: 'Enough tries, done prompting.',
@@ -66,7 +69,6 @@ class MordClient extends AkairoClient {
       }
     })
 
-    this.initSettings()
     this.on('dataReady', () => {
       this.configureHandlers()
       this.addArgumentTypes()
@@ -75,14 +77,16 @@ class MordClient extends AkairoClient {
   }
 
   /**
-   * Prepares `data` and `settings` properties via
-   * connecting to the database and linking data provider.
+   * Prepares `data` and `settings` properties via connecting
+   * to the database and linking data provider, then logs in.
+   * @param {string} token - Discord API token.
    * @emits MordClient#dataReady - Data and settings are setup.
    */
-  async initSettings () {
+  async login (token) {
     this.settings = await Data.linkProvider(this.data.db)
     this.settings.init()
     this.emit('dataReady')
+    super.login(token)
   }
 
   /**
