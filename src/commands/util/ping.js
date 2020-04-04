@@ -7,7 +7,7 @@ class PingCommand extends Command {
       category: 'util',
       description: 'Displays round-trip and heartbeat latency.',
       destruct: 5000,
-      cooldown: 5
+      cooldown: 5000
     })
   }
 
