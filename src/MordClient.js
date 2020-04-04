@@ -56,10 +56,12 @@ class MordClient extends AkairoClient {
       commandUtil: true,
       handleEdits: true,
       storeMessages: true,
-      prefix: m => this.settings.get(
-        m.guild.id, 'prefix',
-        this.settings.get('global', 'prefix')
-      ),
+      prefix: m => {
+        const globalPrefix = this.settings.get('global', 'prefix')
+        return m.channel.type === 'dm'
+          ? ['', globalPrefix]
+          : this.settings.get(m.guild.id, 'prefix', globalPrefix)
+        },
       argumentDefaults: {
         prompt: {
           ended: 'Enough tries, done prompting.',
