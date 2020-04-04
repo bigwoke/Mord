@@ -1,15 +1,13 @@
 const { isProtected } = require('../Tools.js')
+const cfg = require('../../../config.js')
 
 /**
- * Sets all unset default data for a given guild.
- * @param {AkairoClient} client - Akairo bot client instance.
- * @param {string} guild - Guild object to preconfigure.
+ * Assigns default values for commands and categories to a given guild.
+ * @param {AkairoClient} client - Client holding settings object.
+ * @param {string} guild - Guild object to assign defaults to.
  */
-function setupGuild (client, guild) {
+function assignDefaults (client, guild) {
   const { settings, commandHandler } = client
-
-  // If the settings cache does not have a guild, set the guild's name in its record.
-  if (!settings.items.has(guild.id)) settings.set(guild.id, 'name', guild.name || 'global')
 
   const disabledCommands = settings.get(guild.id, 'disabled_cmd', {})
   for (const cmd of commandHandler.modules.values()) {
@@ -24,6 +22,25 @@ function setupGuild (client, guild) {
       settings.set(guild.id, 'disabled_cat', { [cat.id]: false })
     }
   }
+}
+
+/**
+ * Sets all unset default data for a given guild.
+ * @param {AkairoClient} client - Akairo bot client instance.
+ * @param {string} guild - Guild object to preconfigure.
+ */
+function setupGuild (client, guild) {
+  const { settings } = client
+
+  // If global is not set yet (first start), setup default prefix.
+  if (guild.id === 'global' && !settings.items.has(guild.id)) {
+    settings.set(guild.id, 'prefix', cfg.client.prefix)
+  }
+
+  // If the settings cache does not have a guild, set the guild's name in its record.
+  if (!settings.items.has(guild.id)) settings.set(guild.id, 'name', guild.name || 'global')
+
+  assignDefaults(client, guild)
 }
 
 /**
