@@ -12,7 +12,7 @@ class ReloadCommand extends Command {
       destruct: 5000,
       args: [
         {
-          id: 'cmd',
+          id: 'command',
           type: Argument.union('command', 'commandAlias'),
           prompt: {
             start: 'Which command do you want to reload?',
@@ -25,15 +25,15 @@ class ReloadCommand extends Command {
   }
 
   exec (message, args) {
-    if (!args.cmd) {
+    if (!args.command) {
       return this.send(message, 'Couldn\'t find that command.');
     }
-    if (!args.cmd.filepath) {
+    if (!args.command.filepath) {
       return this.send(message, 'That command file no longer exists?!');
     }
 
-    args.cmd.reload();
-    return this.send(message, `Command \`${args.cmd.constructor.name}\` reloaded.`);
+    args.command.reload();
+    return this.send(message, `Command \`${args.command.constructor.name}\` reloaded.`);
   }
 }
 
