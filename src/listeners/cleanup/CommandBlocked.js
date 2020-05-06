@@ -14,7 +14,7 @@ class CommandBlockedListener extends Listener {
     const source = message.channel.type === 'dm'
       ? `DM with ${message.author.tag}`
       : `channel '${message.channel.name}' of guild '${message.guild.name}'`
-    log.silly(`Command '${command.id}' blocked in ${source} because '${reason}'`)
+    log.debug(`Command '${command.id}' blocked in ${source} because '${reason}'`)
 
     switch (reason) {
       case 'commandDisabledGuild':

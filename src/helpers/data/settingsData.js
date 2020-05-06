@@ -9,11 +9,11 @@ const cfg = require('../../../config')
  */
 function connect () {
   return MongoClient.connect(cfg.db.url, cfg.db.opts).then(mongo => {
-    log.info('Connected to MongoDB database succesfully.')
+    log.info('[DB] Connected to MongoDB database succesfully.')
     return mongo
   }).catch(err => {
-    log.error(`Database connection error:\n${err.errmsg}\n${err.stack}`)
-    throw new Error(`Database connection error:\n${err.errmsg}\n${err.stack}`)
+    log.error('[DB] Database connection error: %o', err)
+    throw err
   })
 }
 
