@@ -1,5 +1,5 @@
-const guildsData = require('./guildsData.js')
-const settingsData = require('./settingsData.js')
+const guilds = require('./guilds.js')
+const mongo = require('./mongo.js')
 
 /**
  * Class containing helper functions for connecting the bot
@@ -28,7 +28,7 @@ class Data {
    * view of the client, and global settings.
    */
   setupCurrentGuilds () {
-    guildsData.setupCurrentGuilds(this.client)
+    guilds.setupCurrentGuilds(this.client)
   }
 
   /**
@@ -36,7 +36,7 @@ class Data {
    * @param {string} guild - Guild object to preconfigure.
    */
   setupGuild (guild) {
-    guildsData.setupGuild(this.client, guild)
+    guilds.setupGuild(this.client, guild)
   }
 
   /**
@@ -45,7 +45,7 @@ class Data {
    * @static
    */
   static connect () {
-    return settingsData.connect()
+    return mongo.connect()
   }
 
   /**
@@ -55,7 +55,7 @@ class Data {
    * @static
    */
   static linkProvider (mongoClient) {
-    return settingsData.linkProvider(mongoClient)
+    return mongo.linkProvider(mongoClient)
   }
 }
 

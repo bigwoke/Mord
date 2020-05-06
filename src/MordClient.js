@@ -1,6 +1,6 @@
 const { AkairoClient, InhibitorHandler, ListenerHandler } = require('discord-akairo')
 const MordCommandHandler = require('./types/MordCommandHandler.js')
-const Data = require('./helpers/data/Data.js')
+const Data = require('./helpers/data')
 const cfg = require('../config.js')
 
 /**
