@@ -18,7 +18,7 @@ const log = winston.createLogger({
 if (cfg.logging.file) {
   log.add(new winston.transports.File({
     level: cfg.logging.file,
-    filename: '../../output.log',
+    filename: './output.log',
     // Combine simple + timestamp + errors w/ stack
     format: winston.format.combine(
       winston.format.simple(),
