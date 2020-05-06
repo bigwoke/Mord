@@ -1,31 +1,31 @@
-const log = require('winston')
+const winston = require('winston')
 const cfg = require('../../config.js')
 
-/**
- * Setup Winston logging transports based on config.
- * @returns {Object} Configuration options.
- */
-function buildLoggerOpts () {
-  const opts = {
-    transports: [
-      new log.transports.Console({
-        colorize: true,
-        humanReadableUnhandledException: true,
-        level: cfg.logging.console
-      }),
-      new log.transports.File({
-        filename: '../../output.log',
-        timestamp: true,
-        level: cfg.logging.file,
-        json: false
-      })
-    ]
-  }
+// Create default logger at info level using splat formatter
+const log = winston.createLogger({
+  level: 'info',
+  format: winston.format.splat(),
+  transports: [
+    // Add console transport using CLI formatting
+    new winston.transports.Console({
+      level: cfg.logging.console,
+      format: winston.format.cli()
+    })
+  ]
+})
 
-  if (!cfg.logging.file) opts.transports.pop()
-  return opts
+// If file loglevel is configured, add file transport
+if (cfg.logging.file) {
+  log.add(new winston.transports.File({
+    level: cfg.logging.file,
+    filename: '../../output.log',
+    // Combine simple + timestamp + errors w/ stack
+    format: winston.format.combine(
+      winston.format.simple(),
+      winston.format.timestamp(),
+      winston.format.errors({ stack: true })
+    )
+  }))
 }
-
-log.configure(buildLoggerOpts())
 
 module.exports = log
