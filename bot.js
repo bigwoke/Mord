@@ -1,6 +1,6 @@
 require('dotenv').config();
-const MordClient = require('./src/MordClient.js');
-const cfg = require('./config.js');
+const MordClient = require('./src/MordClient');
+const cfg = require('./config');
 
 const client = new MordClient();
 client.login(cfg.client.token);

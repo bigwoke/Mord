@@ -1,5 +1,5 @@
-const guilds = require('./guilds.js');
-const mongo = require('./mongo.js');
+const guilds = require('./guilds');
+const mongo = require('./mongo');
 
 /**
  * Class containing helper functions for connecting the bot

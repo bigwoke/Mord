@@ -1,4 +1,4 @@
-const Listener = require('../../types/MordListener.js');
+const Listener = require('../../types/MordListener');
 const { Message } = require('discord.js');
 
 class CommandCancelledListener extends Listener {

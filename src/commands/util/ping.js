@@ -1,4 +1,4 @@
-const Command = require('../../types/MordCommand.js');
+const Command = require('../../types/MordCommand');
 
 class PingCommand extends Command {
   constructor () {

@@ -1,4 +1,4 @@
-const Inhibitor = require('../../types/MordInhibitor.js');
+const Inhibitor = require('../../types/MordInhibitor');
 
 class CommandDisabledGlobalInhibitor extends Inhibitor {
   constructor () {

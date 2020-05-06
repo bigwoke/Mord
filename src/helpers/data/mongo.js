@@ -1,6 +1,6 @@
 const MongoDBProvider = require('akairo-provider-mongo');
 const { MongoClient } = require('mongodb');
-const log = require('../log.js');
+const log = require('../log');
 const cfg = require('../../../config');
 
 /**

@@ -1,7 +1,7 @@
 const { AkairoClient, InhibitorHandler, ListenerHandler } = require('discord-akairo');
-const MordCommandHandler = require('./types/MordCommandHandler.js');
+const MordCommandHandler = require('./types/MordCommandHandler');
 const Data = require('./helpers/data');
-const cfg = require('../config.js');
+const cfg = require('../config');
 
 /**
  * Custom child class of AkairoClient. Sets

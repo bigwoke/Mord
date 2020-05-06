@@ -1,5 +1,5 @@
 const winston = require('winston');
-const cfg = require('../../config.js');
+const cfg = require('../../config');
 
 // Create default logger at info level using splat formatter
 const log = winston.createLogger({

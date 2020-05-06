@@ -1,5 +1,5 @@
 const { Listener } = require('discord-akairo');
-const { destructMessage } = require('../helpers/Tools.js');
+const { destructMessage } = require('../helpers/tools');
 
 /**
  * Extension of Listener class made to apply new properties that help

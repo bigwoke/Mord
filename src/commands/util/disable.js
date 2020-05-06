@@ -1,6 +1,6 @@
 const { Argument } = require('discord-akairo');
-const Command = require('../../types/MordCommand.js');
-const { isDM, isProtected } = require('../../helpers/Tools.js');
+const Command = require('../../types/MordCommand');
+const { isDM, isProtected } = require('../../helpers/tools');
 
 class DisableCommand extends Command {
   constructor () {

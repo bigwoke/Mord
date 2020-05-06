@@ -1,4 +1,4 @@
-const Listener = require('../../types/MordListener.js');
+const Listener = require('../../types/MordListener');
 
 /*
  * Akairo constant object is missing COMMAND_BREAKOUT object

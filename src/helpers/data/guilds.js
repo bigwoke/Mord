@@ -1,5 +1,5 @@
-const { isProtected } = require('../Tools.js');
-const cfg = require('../../../config.js');
+const { isProtected } = require('../tools');
+const cfg = require('../../../config');
 
 /**
  * Assigns default values for commands and categories to a given guild.
