@@ -25,6 +25,12 @@ class MordCommand extends Command {
      * @default false
      */
     this.protected = opts.protected || false;
+
+    /**
+     * Command usage template for help command autofill.
+     * @type {string}
+     */
+    this.usage = opts.usage || MordCommand.usage(id, opts);
   }
 
   /**
@@ -43,6 +49,28 @@ class MordCommand extends Command {
 
     message.util.addMessage(resp);
     return resp;
+  }
+
+  /**
+   * Builds generic usage string for a given command ID
+   * @param {string} id - Command ID.
+   * @param {Object} opts - Argument options object.
+   * @returns {string}
+   */
+  static usage (id, opts) {
+    let usage = `${id}`;
+    if (!opts.args) return usage;
+
+    for (const arg of opts.args) {
+      // If argument seems required, add required argument to usage string.
+      if (!arg.match && arg.type && arg.prompt) usage += ` <${arg.id}>`;
+      // If argument seems optional, add optional argument to usage string.
+      if (!arg.match && !arg.type) usage += ` [<${arg.id}>]`;
+      // If argument is a flag match, add flag to usage string.
+      if (arg.match === 'flag') usage += ` [${arg.flag}]`;
+    }
+
+    return usage;
   }
 }
 

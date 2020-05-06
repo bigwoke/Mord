@@ -15,6 +15,7 @@ class DisableCommand extends Command {
       cooldown: 5000,
       ratelimit: 2,
       userPermissions: 'ADMINISTRATOR',
+      usage: 'disable {<command> | category:<category>} [--global]',
       args: [
         {
           id: 'mod',
@@ -98,7 +99,6 @@ class DisableCommand extends Command {
       ? responses[result] + responses.warning
       : responses[result];
     return this.send(message, resp);
-
   }
 
   /**

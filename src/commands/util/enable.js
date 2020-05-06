@@ -16,6 +16,7 @@ class EnableCommand extends Command {
       cooldown: 5000,
       ratelimit: 2,
       userPermissions: 'ADMINISTRATOR',
+      usage: 'enable {<command> | category:<category>} [--global]',
       args: [
         {
           id: 'mod',
