@@ -6,7 +6,7 @@ const config = {
     ownerID: process.env.OWNERID || ''
   },
   logging: {
-    console: process.env.LOG_CONSOLE || 'silly',
+    console: process.env.LOG_CONSOLE || 'info',
     file: process.env.LOG_FILE
   },
   db: {
