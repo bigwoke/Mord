@@ -1,24 +1,24 @@
-const Listener = require('../../types/MordListener.js')
-const log = require('../../helpers/log.js')
+const Listener = require('../../types/MordListener.js');
+const log = require('../../helpers/log.js');
 
 class CommandRegisterListener extends Listener {
   constructor () {
     super('commandRegister', {
       emitter: 'commandHandler',
       event: 'load'
-    })
+    });
   }
 
   exec (command) {
-    this.verifyID(command)
-    log.verbose(`Command ${command.id} loaded.`)
+    this.verifyID(command);
+    log.verbose(`Command ${command.id} loaded.`);
   }
 
   verifyID (command) {
-    const { categories } = command.handler
-    const duplicateID = categories.some(cat => cat.id === command.id)
-    if (duplicateID) throw new Error('Category and command IDs must be unique.')
+    const { categories } = command.handler;
+    const duplicateID = categories.some(cat => cat.id === command.id);
+    if (duplicateID) throw new Error('Category and command IDs must be unique.');
   }
 }
 
-module.exports = CommandRegisterListener
+module.exports = CommandRegisterListener;

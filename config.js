@@ -14,6 +14,6 @@ const config = {
     name: process.env.DB_NAME || 'settings',
     opts: { useNewUrlParser: true, useUnifiedTopology: true }
   }
-}
+};
 
-module.exports = config
+module.exports = config;

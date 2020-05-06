@@ -1,5 +1,5 @@
-const { Listener } = require('discord-akairo')
-const { destructMessage } = require('../helpers/Tools.js')
+const { Listener } = require('discord-akairo');
+const { destructMessage } = require('../helpers/Tools.js');
 
 /**
  * Extension of Listener class made to apply new properties that help
@@ -10,7 +10,7 @@ const { destructMessage } = require('../helpers/Tools.js')
  */
 class MordListener extends Listener {
   constructor (id, opts) {
-    super(id, opts)
+    super(id, opts);
 
     /**
      * Whether messages sent by the listener should self-destruct.
@@ -18,7 +18,7 @@ class MordListener extends Listener {
      * @type {number}
      * @default null
      */
-    this.destruct = opts.destruct || null
+    this.destruct = opts.destruct || null;
   }
 
   /**
@@ -31,15 +31,15 @@ class MordListener extends Listener {
    */
   async send (message, content, options = {}, isReply = false) {
     if (!this.client.commandHandler.commandUtil) {
-      throw new Error('CommandUtil is disabled.')
+      throw new Error('CommandUtil is disabled.');
     }
     const resp = isReply
       ? message.util.reply(content, options)
-      : message.util.send(content, options)
+      : message.util.send(content, options);
 
-    destructMessage(this, [await resp, message])
-    return resp
+    destructMessage(this, [await resp, message]);
+    return resp;
   }
 }
 
-module.exports = MordListener
+module.exports = MordListener;

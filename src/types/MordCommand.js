@@ -1,4 +1,4 @@
-const { Command } = require('discord-akairo')
+const { Command } = require('discord-akairo');
 
 /**
  * Extension of Command class made to apply new properties/methods
@@ -9,7 +9,7 @@ const { Command } = require('discord-akairo')
  */
 class MordCommand extends Command {
   constructor (id, opts) {
-    super(id, opts)
+    super(id, opts);
 
     /**
      * Whether the command message should self-destruct.
@@ -17,14 +17,14 @@ class MordCommand extends Command {
      * @type {number}
      * @default 0
      */
-    this.destruct = opts.destruct || null
+    this.destruct = opts.destruct || null;
 
     /**
      * Whether this command should be protected from disabling.
      * @type {boolean}
      * @default false
      */
-    this.protected = opts.protected || false
+    this.protected = opts.protected || false;
   }
 
   /**
@@ -36,14 +36,14 @@ class MordCommand extends Command {
    * @returns {Promise<Message>} Sent message(s).
    */
   send (message, content, options = {}, isReply = false) {
-    if (!this.handler.commandUtil) throw new Error('CommandUtil is disabled.')
+    if (!this.handler.commandUtil) throw new Error('CommandUtil is disabled.');
     const resp = isReply
       ? message.util.reply(content, options)
-      : message.util.send(content, options)
+      : message.util.send(content, options);
 
-    message.util.addMessage(resp)
-    return resp
+    message.util.addMessage(resp);
+    return resp;
   }
 }
 
-module.exports = MordCommand
+module.exports = MordCommand;

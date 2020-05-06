@@ -1,7 +1,7 @@
-const { AkairoClient, InhibitorHandler, ListenerHandler } = require('discord-akairo')
-const MordCommandHandler = require('./types/MordCommandHandler.js')
-const Data = require('./helpers/data')
-const cfg = require('../config.js')
+const { AkairoClient, InhibitorHandler, ListenerHandler } = require('discord-akairo');
+const MordCommandHandler = require('./types/MordCommandHandler.js');
+const Data = require('./helpers/data');
+const cfg = require('../config.js');
 
 /**
  * Custom child class of AkairoClient. Sets
@@ -15,19 +15,19 @@ class MordClient extends AkairoClient {
     super(
       { ownerID: cfg.client.ownerID },
       { disableMentions: 'everyone' }
-    )
+    );
 
     /**
      * Data helper object containing setting provider and mongodb connection.
      * @type {Data}
      */
-    this.data = new Data(this, Data.connect())
+    this.data = new Data(this, Data.connect());
 
     /**
      * MongoDB settings provider instance for configuration persistence.
      * @type {MongoDBProvider}
      */
-    this.settings = null
+    this.settings = null;
 
     /**
      * Handler for listeners. Available via `handler` property in listeners.
@@ -36,7 +36,7 @@ class MordClient extends AkairoClient {
     this.listenerHandler = new ListenerHandler(this, {
       directory: './src/listeners/',
       automateCategories: true
-    })
+    });
 
     /**
      * Handler for inhibitors, available via `handler` property in inhibitors.
@@ -45,7 +45,7 @@ class MordClient extends AkairoClient {
     this.inhibitorHandler = new InhibitorHandler(this, {
       directory: './src/inhibitors/',
       automateCategories: true
-    })
+    });
 
     /**
      * Custom handler for commands. Available via `handler` property in commands.
@@ -57,10 +57,10 @@ class MordClient extends AkairoClient {
       handleEdits: true,
       storeMessages: true,
       prefix: m => {
-        const globalPrefix = this.settings.get('global', 'prefix')
+        const globalPrefix = this.settings.get('global', 'prefix');
         return m.channel.type === 'dm'
           ? ['', globalPrefix]
-          : this.settings.get(m.guild.id, 'prefix', globalPrefix)
+          : this.settings.get(m.guild.id, 'prefix', globalPrefix);
         },
       argumentDefaults: {
         prompt: {
@@ -69,13 +69,13 @@ class MordClient extends AkairoClient {
           timeout: 'Try again when you\'re ready.'
         }
       }
-    })
+    });
 
     this.on('dataReady', () => {
-      this.configureHandlers()
-      this.addArgumentTypes()
-    })
-    this.on('ready', () => this.data.setupCurrentGuilds())
+      this.configureHandlers();
+      this.addArgumentTypes();
+    });
+    this.on('ready', () => this.data.setupCurrentGuilds());
   }
 
   /**
@@ -85,10 +85,10 @@ class MordClient extends AkairoClient {
    * @emits MordClient#dataReady - Data and settings are setup.
    */
   async login (token) {
-    this.settings = await Data.linkProvider(this.data.db)
-    this.settings.init()
-    this.emit('dataReady')
-    super.login(token)
+    this.settings = await Data.linkProvider(this.data.db);
+    this.settings.init();
+    this.emit('dataReady');
+    super.login(token);
   }
 
   /**
@@ -102,15 +102,15 @@ class MordClient extends AkairoClient {
         inhibitorHandler: this.inhibitorHandler,
         listenerHandler: this.listenerHandler
       })
-      .loadAll()
+      .loadAll();
 
     this.inhibitorHandler
-      .loadAll()
+      .loadAll();
 
     this.commandHandler
       .useInhibitorHandler(this.inhibitorHandler)
       .useListenerHandler(this.listenerHandler)
-      .loadAll()
+      .loadAll();
   }
 
   /**
@@ -118,10 +118,10 @@ class MordClient extends AkairoClient {
    */
   addArgumentTypes () {
     this.commandHandler.resolver.addType('category', (message, phrase) => {
-      if (!phrase) return null
-      return this.commandHandler.categories.get(phrase.toLowerCase())
-    })
+      if (!phrase) return null;
+      return this.commandHandler.categories.get(phrase.toLowerCase());
+    });
   }
 }
 
-module.exports = MordClient
+module.exports = MordClient;

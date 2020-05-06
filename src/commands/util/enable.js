@@ -1,6 +1,6 @@
-const { Argument } = require('discord-akairo')
-const Command = require('../../types/MordCommand.js')
-const { isDM } = require('../../helpers/Tools.js')
+const { Argument } = require('discord-akairo');
+const Command = require('../../types/MordCommand.js');
+const { isDM } = require('../../helpers/Tools.js');
 
 class EnableCommand extends Command {
   constructor () {
@@ -32,20 +32,20 @@ class EnableCommand extends Command {
           flag: '--global'
         }
       ]
-    })
+    });
   }
 
   exec (message, args) {
     // Get effective scope of this command.
-    const scope = this.getScope(message, args)
-    if (!scope) return
+    const scope = this.getScope(message, args);
+    if (!scope) return;
 
     // If the user gave an 'all' wildcard (command/category), just enable all.
-    if (args.mod.includes && args.mod.includes('*')) return this.enableAll(message, args, scope)
+    if (args.mod.includes && args.mod.includes('*')) return this.enableAll(message, args, scope);
 
     // Enable command/category if necessary, send end message.
-    const result = this.runLogic(message, args, scope)
-    return this.sendResponse(message, args, scope, result)
+    const result = this.runLogic(message, args, scope);
+    return this.sendResponse(message, args, scope, result);
   }
 
   /**
@@ -57,17 +57,17 @@ class EnableCommand extends Command {
    */
   enableAll (message, args, scope) {
     // Set collection to enable, data key, and type based on input.
-    const collToEnable = args.mod === '*' ? this.handler.modules : this.handler.categories
-    const dataKey = args.mod === '*' ? 'disabled_cmd' : 'disabled_cat'
-    const type = args.mod === '*' ? 'command' : 'category'
+    const collToEnable = args.mod === '*' ? this.handler.modules : this.handler.categories;
+    const dataKey = args.mod === '*' ? 'disabled_cmd' : 'disabled_cat';
+    const type = args.mod === '*' ? 'command' : 'category';
 
     // Every module with a current true (disabled) value is enabled.
-    const disabledModules = this.client.settings.get(scope, dataKey)
+    const disabledModules = this.client.settings.get(scope, dataKey);
     for (const mod of collToEnable) {
-      if (disabledModules[mod.id] === true) this.enableModule(scope, dataKey, mod)
+      if (disabledModules[mod.id] === true) this.enableModule(scope, dataKey, mod);
     }
 
-    return this.send(message, EnableCommand.getResponses(message, args, type, scope).all)
+    return this.send(message, EnableCommand.getResponses(message, args, type, scope).all);
   }
 
   /**
@@ -78,7 +78,7 @@ class EnableCommand extends Command {
    * @returns {Promise}
    */
   enableModule (scope, dataKey, mod) {
-    return this.client.settings.set(scope, dataKey, { [mod.id]: false })
+    return this.client.settings.set(scope, dataKey, { [mod.id]: false });
   }
 
   /**
@@ -89,11 +89,11 @@ class EnableCommand extends Command {
    */
   getScope (message, args) {
     if (this.client.isOwner(message.author)) {
-      if (args.global) return 'global'
-      if (isDM(message)) return 'global'
+      if (args.global) return 'global';
+      if (isDM(message)) return 'global';
     }
-    if (message.channel.type === 'text') return message.guild.id
-    return null
+    if (message.channel.type === 'text') return message.guild.id;
+    return null;
   }
 
   /**
@@ -104,14 +104,14 @@ class EnableCommand extends Command {
    * @returns {string} 'success' or 'failure' result from enabling.
    */
   runLogic (message, args, scope) {
-    const dataKey = args.mod instanceof Command ? 'disabled_cmd' : 'disabled_cat'
-    const disabledModules = this.client.settings.get(scope, dataKey)
+    const dataKey = args.mod instanceof Command ? 'disabled_cmd' : 'disabled_cat';
+    const disabledModules = this.client.settings.get(scope, dataKey);
 
     if (disabledModules[args.mod.id] === true) {
-      this.enableModule(scope, dataKey, args.mod)
-      return 'success'
+      this.enableModule(scope, dataKey, args.mod);
+      return 'success';
     }
-    return 'failure'
+    return 'failure';
   }
 
   /**
@@ -123,15 +123,15 @@ class EnableCommand extends Command {
    * @returns {Promise<Message>}
    */
   sendResponse (message, args, scope, result) {
-    const type = args.mod instanceof Command ? 'command' : 'category'
-    const dataKey = args.mod instanceof Command ? 'disabled_cmd' : 'disabled_cat'
-    const responses = EnableCommand.getResponses(message, args, type, scope)
+    const type = args.mod instanceof Command ? 'command' : 'category';
+    const dataKey = args.mod instanceof Command ? 'disabled_cmd' : 'disabled_cat';
+    const responses = EnableCommand.getResponses(message, args, type, scope);
 
-    const globalEnabled = this.client.settings.get('global', dataKey)[args.mod.id] === false
+    const globalEnabled = this.client.settings.get('global', dataKey)[args.mod.id] === false;
     const resp = scope !== 'global' && !globalEnabled
       ? responses[result] + responses.warning
-      : responses[result]
-    return this.send(message, resp)
+      : responses[result];
+    return this.send(message, resp);
   }
 
   /**
@@ -141,12 +141,12 @@ class EnableCommand extends Command {
    * @returns {Command|Category|string|null}
    */
   static async determineType (message, phrase) {
-    const { resolver } = this.handler
-    const catFlag = 'category:'
-    const cmd = await Argument.cast('commandAlias', resolver, message, phrase)
-    const cat = await Argument.cast('category', resolver, message, phrase.substr(catFlag.length))
-    const all = await Argument.cast(['*', 'category:*'], resolver, message, phrase)
-    return cmd || cat || all || null
+    const { resolver } = this.handler;
+    const catFlag = 'category:';
+    const cmd = await Argument.cast('commandAlias', resolver, message, phrase);
+    const cat = await Argument.cast('category', resolver, message, phrase.substr(catFlag.length));
+    const all = await Argument.cast(['*', 'category:*'], resolver, message, phrase);
+    return cmd || cat || all || null;
   }
 
   /**
@@ -167,8 +167,8 @@ class EnableCommand extends Command {
         `${scope === 'global' ? 'globally' : `in ${message.guild.name}`}.`,
       all: `Any disabled ${type} modules have now been enabled ` +
         `${scope === 'global' ? 'globally' : `in ${message.guild.name}`}.`
-    }
+    };
   }
 }
 
-module.exports = EnableCommand
+module.exports = EnableCommand;

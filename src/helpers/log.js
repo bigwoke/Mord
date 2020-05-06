@@ -1,5 +1,5 @@
-const winston = require('winston')
-const cfg = require('../../config.js')
+const winston = require('winston');
+const cfg = require('../../config.js');
 
 // Create default logger at info level using splat formatter
 const log = winston.createLogger({
@@ -12,7 +12,7 @@ const log = winston.createLogger({
       format: winston.format.cli()
     })
   ]
-})
+});
 
 // If file loglevel is configured, add file transport
 if (cfg.logging.file) {
@@ -25,7 +25,7 @@ if (cfg.logging.file) {
       winston.format.timestamp(),
       winston.format.errors({ stack: true })
     )
-  }))
+  }));
 }
 
-module.exports = log
+module.exports = log;

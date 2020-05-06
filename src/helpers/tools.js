@@ -1,4 +1,4 @@
-const { Message } = require('discord.js')
+const { Message } = require('discord.js');
 
 /**
  * Returns true if given message channel type is DM.
@@ -6,7 +6,7 @@ const { Message } = require('discord.js')
  * @returns {boolean}
  */
 function isDM (message) {
-  return message.channel.type === 'dm'
+  return message.channel.type === 'dm';
 }
 
 /**
@@ -17,7 +17,7 @@ function isDM (message) {
 function isPromise (value) {
   return value &&
   typeof value.then === 'function' &&
-  typeof value.catch === 'function'
+  typeof value.catch === 'function';
 }
 
 /**
@@ -26,8 +26,8 @@ function isPromise (value) {
  * @returns {boolean}
  */
 function isProtected (mod) {
-  const protectedInCategory = mod.some && mod.some(m => m.protected)
-  return mod.protected || protectedInCategory
+  const protectedInCategory = mod.some && mod.some(m => m.protected);
+  return mod.protected || protectedInCategory;
 }
 
 /**
@@ -36,16 +36,16 @@ function isProtected (mod) {
  * @param {Message|Array<Message>} messages - Discord.js message(s).
  */
 function destructMessage (sender, messages) {
-  if (!sender.destruct) return
-  if (!(messages instanceof Array)) messages = [messages]
+  if (!sender.destruct) return;
+  if (!(messages instanceof Array)) messages = [messages];
 
   for (const msg of messages) {
-    if (msg.channel.type === 'dm') return
-    if (!(msg instanceof Message)) return
+    if (msg.channel.type === 'dm') return;
+    if (!(msg instanceof Message)) return;
     msg.delete({
       timeout: sender.destruct,
       reason: `${sender.constructor.name} cleanup`
-    })
+    });
   }
 }
 
@@ -54,4 +54,4 @@ module.exports = {
   isPromise,
   isProtected,
   destructMessage
-}
+};

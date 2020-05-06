@@ -1,4 +1,4 @@
-const { CommandHandler } = require('discord-akairo')
+const { CommandHandler } = require('discord-akairo');
 
 /**
  * Wrapper class to add additional functionality to command handling.
@@ -13,14 +13,14 @@ class MordCommandHandler extends CommandHandler {
    * @param {string} filepath - Path to command file.
    */
   register (command, filepath) {
-    const originalCategories = this.categories.clone()
-    super.register(command, filepath)
+    const originalCategories = this.categories.clone();
+    super.register(command, filepath);
 
     if (originalCategories.size < this.categories.size) {
-      const diff = this.categories.difference(originalCategories)
-      this.emit('categoryRegister', diff.first())
+      const diff = this.categories.difference(originalCategories);
+      this.emit('categoryRegister', diff.first());
     }
   }
 }
 
-module.exports = MordCommandHandler
+module.exports = MordCommandHandler;

@@ -1,5 +1,5 @@
-const { Argument } = require('discord-akairo')
-const Command = require('../../types/MordCommand.js')
+const { Argument } = require('discord-akairo');
+const Command = require('../../types/MordCommand.js');
 
 class ReloadCommand extends Command {
   constructor () {
@@ -21,20 +21,20 @@ class ReloadCommand extends Command {
           }
         }
       ]
-    })
+    });
   }
 
   exec (message, args) {
     if (!args.cmd) {
-      return this.send(message, 'Couldn\'t find that command.')
+      return this.send(message, 'Couldn\'t find that command.');
     }
     if (!args.cmd.filepath) {
-      return this.send(message, 'That command file no longer exists?!')
+      return this.send(message, 'That command file no longer exists?!');
     }
 
-    args.cmd.reload()
-    return this.send(message, `Command \`${args.cmd.constructor.name}\` reloaded.`)
+    args.cmd.reload();
+    return this.send(message, `Command \`${args.cmd.constructor.name}\` reloaded.`);
   }
 }
 
-module.exports = ReloadCommand
+module.exports = ReloadCommand;

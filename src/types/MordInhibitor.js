@@ -1,5 +1,5 @@
-const { Inhibitor } = require('discord-akairo')
-const { destructMessage } = require('../helpers/Tools.js')
+const { Inhibitor } = require('discord-akairo');
+const { destructMessage } = require('../helpers/Tools.js');
 
 /**
  * Extension of Inhibitor class made to apply new properties that help
@@ -10,7 +10,7 @@ const { destructMessage } = require('../helpers/Tools.js')
  */
 class MordInhibitor extends Inhibitor {
   constructor (id, opts) {
-    super(id, opts)
+    super(id, opts);
 
     /**
      * Whether messages sent by the inhibitor should self-destruct.
@@ -18,7 +18,7 @@ class MordInhibitor extends Inhibitor {
      * @type {number}
      * @default null
      */
-    this.destruct = opts.destruct || null
+    this.destruct = opts.destruct || null;
   }
 
   /**
@@ -31,15 +31,15 @@ class MordInhibitor extends Inhibitor {
    */
   async send (message, content, options = {}, isReply = false) {
     if (!this.client.commandHandler.commandUtil) {
-      throw new Error('CommandUtil is disabled.')
+      throw new Error('CommandUtil is disabled.');
     }
     const resp = isReply
       ? message.util.reply(content, options)
-      : message.util.send(content, options)
+      : message.util.send(content, options);
 
-    destructMessage(this, [await resp, message])
-    return resp
+    destructMessage(this, [await resp, message]);
+    return resp;
   }
 }
 
-module.exports = MordInhibitor
+module.exports = MordInhibitor;

@@ -1,5 +1,5 @@
-const guilds = require('./guilds.js')
-const mongo = require('./mongo.js')
+const guilds = require('./guilds.js');
+const mongo = require('./mongo.js');
 
 /**
  * Class containing helper functions for connecting the bot
@@ -14,13 +14,13 @@ class Data {
      * AkairoClient bot instance.
      * @type {AkairoClient}
      */
-    this.client = client
+    this.client = client;
 
     /**
      * MongoClient connection instance.
      * @type {MongoClient}
      */
-    this.db = db
+    this.db = db;
   }
 
   /**
@@ -28,7 +28,7 @@ class Data {
    * view of the client, and global settings.
    */
   setupCurrentGuilds () {
-    guilds.setupCurrentGuilds(this.client)
+    guilds.setupCurrentGuilds(this.client);
   }
 
   /**
@@ -36,7 +36,7 @@ class Data {
    * @param {string} guild - Guild object to preconfigure.
    */
   setupGuild (guild) {
-    guilds.setupGuild(this.client, guild)
+    guilds.setupGuild(this.client, guild);
   }
 
   /**
@@ -45,7 +45,7 @@ class Data {
    * @static
    */
   static connect () {
-    return mongo.connect()
+    return mongo.connect();
   }
 
   /**
@@ -55,8 +55,8 @@ class Data {
    * @static
    */
   static linkProvider (mongoClient) {
-    return mongo.linkProvider(mongoClient)
+    return mongo.linkProvider(mongoClient);
   }
 }
 
-module.exports = Data
+module.exports = Data;

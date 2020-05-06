@@ -1,5 +1,5 @@
-const Listener = require('../../types/MordListener.js')
-const log = require('../../helpers/log.js')
+const Listener = require('../../types/MordListener.js');
+const log = require('../../helpers/log.js');
 
 class ErrorListener extends Listener {
   constructor () {
@@ -7,12 +7,12 @@ class ErrorListener extends Listener {
       category: 'logging',
       emitter: 'client',
       event: 'error'
-    })
+    });
   }
 
   exec (message) {
-    log.error(message)
+    log.error(message);
   }
 }
 
-module.exports = ErrorListener
+module.exports = ErrorListener;

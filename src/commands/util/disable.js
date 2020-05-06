@@ -1,6 +1,6 @@
-const { Argument } = require('discord-akairo')
-const Command = require('../../types/MordCommand.js')
-const { isDM, isProtected } = require('../../helpers/Tools.js')
+const { Argument } = require('discord-akairo');
+const Command = require('../../types/MordCommand.js');
+const { isDM, isProtected } = require('../../helpers/Tools.js');
 
 class DisableCommand extends Command {
   constructor () {
@@ -31,19 +31,19 @@ class DisableCommand extends Command {
           flag: '--global'
         }
       ]
-    })
+    });
   }
 
   exec (message, args) {
     // Get effective scope of command.
-    const scope = this.getScope(message, args)
-    if (!scope) return
+    const scope = this.getScope(message, args);
+    if (!scope) return;
 
-    if (isProtected(args)) return this.sendResponse(message, args, scope, 'prot')
+    if (isProtected(args)) return this.sendResponse(message, args, scope, 'prot');
 
     // Disable the command if needed, respond accordingly.
-    const result = this.runLogic(message, args, scope)
-    return this.sendResponse(message, args, scope, result)
+    const result = this.runLogic(message, args, scope);
+    return this.sendResponse(message, args, scope, result);
   }
 
   /**
@@ -54,11 +54,11 @@ class DisableCommand extends Command {
    */
   getScope (message, args) {
     if (this.client.isOwner(message.author)) {
-      if (args.global) return 'global'
-      if (isDM(message)) return 'global'
+      if (args.global) return 'global';
+      if (isDM(message)) return 'global';
     }
-    if (message.channel.type === 'text') return message.guild.id
-    return null
+    if (message.channel.type === 'text') return message.guild.id;
+    return null;
   }
 
   /**
@@ -69,14 +69,14 @@ class DisableCommand extends Command {
    * @returns {string} 'success' or 'failure' result from disabling.
    */
   runLogic (message, args, scope) {
-    const dataKey = args.mod instanceof Command ? 'disabled_cmd' : 'disabled_cat'
-    const disabledModules = this.client.settings.get(scope, dataKey)
+    const dataKey = args.mod instanceof Command ? 'disabled_cmd' : 'disabled_cat';
+    const disabledModules = this.client.settings.get(scope, dataKey);
 
     if (disabledModules[args.mod.id] === false) {
-      this.client.settings.set(scope, dataKey, { [args.mod.id]: true })
-      return 'success'
+      this.client.settings.set(scope, dataKey, { [args.mod.id]: true });
+      return 'success';
     }
-    return 'failure'
+    return 'failure';
   }
 
   /**
@@ -88,16 +88,16 @@ class DisableCommand extends Command {
    * @returns {Promise<Message>}
    */
   sendResponse (message, args, scope, result) {
-    const type = args.mod instanceof Command ? 'command' : 'category'
-    const dataKey = args.mod instanceof Command ? 'disabled_cmd' : 'disabled_cat'
-    const responses = DisableCommand.getResponses(message, args, type, scope)
-    if (result === 'prot') return this.send(message, responses[result])
+    const type = args.mod instanceof Command ? 'command' : 'category';
+    const dataKey = args.mod instanceof Command ? 'disabled_cmd' : 'disabled_cat';
+    const responses = DisableCommand.getResponses(message, args, type, scope);
+    if (result === 'prot') return this.send(message, responses[result]);
 
-    const globalEnabled = this.client.settings.get('global', dataKey)[args.mod.id] === false
+    const globalEnabled = this.client.settings.get('global', dataKey)[args.mod.id] === false;
     const resp = scope !== 'global' && !globalEnabled
       ? responses[result] + responses.warning
-      : responses[result]
-    return this.send(message, resp)
+      : responses[result];
+    return this.send(message, resp);
 
   }
 
@@ -108,11 +108,11 @@ class DisableCommand extends Command {
    * @returns {Command|Category|null}
    */
   static async determineType (message, phrase) {
-    const { resolver } = this.handler
-    const catFlag = 'category:'
-    const cmd = await Argument.cast('commandAlias', resolver, message, phrase)
-    const cat = await Argument.cast('category', resolver, message, phrase.substr(catFlag.length))
-    return cmd || cat || null
+    const { resolver } = this.handler;
+    const catFlag = 'category:';
+    const cmd = await Argument.cast('commandAlias', resolver, message, phrase);
+    const cat = await Argument.cast('category', resolver, message, phrase.substr(catFlag.length));
+    return cmd || cat || null;
   }
 
   /**
@@ -132,8 +132,8 @@ class DisableCommand extends Command {
         `${scope === 'global' ? 'globally' : `in ${message.guild.name}`}.`,
       failure: `The \`${args.mod.id}\` ${type} is already disabled ` +
         `${scope === 'global' ? 'globally' : `in ${message.guild.name}`}.`
-    }
+    };
   }
 }
 
-module.exports = DisableCommand
+module.exports = DisableCommand;
