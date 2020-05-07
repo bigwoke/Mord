@@ -86,7 +86,7 @@ function buildUsageString (command, message) {
     : new Permissions(isOwner * 8);
 
   // If the command doesn't pass these checks, skip it.
-  if (!checkPermissionsAndScope(isOwner, userPerms)) return;
+  if (!checkPermissionsAndScope(command, message, isOwner, userPerms)) return;
 
   const { settings } = command.client;
   const prefix = message.guild
