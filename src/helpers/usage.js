@@ -8,13 +8,13 @@ const { isDM } = require('../helpers/tools');
  * @param {Object} arg - Single argument object from a command.
  * @param {boolean} isOwner - whether message author is the bot owner.
  * @param {Permissions} userPerms - Permissions of the user if in a guild.[1]
- * @returns {string | undefined}
+ * @returns {string}
  */
 function appendArgumentUsage (arg, isOwner, userPerms) {
   // If the argument is marked owner only and author is not the owner, skip.
-  if (arg.ownerOnly && !isOwner) return;
+  if (arg.ownerOnly && !isOwner) return '';
   // If argument has permission requirement, and user doesn't have them, skip.
-  else if (arg.userPermissions && !userPerms.has(arg.userPermissions)) return;
+  else if (arg.userPermissions && !userPerms.has(arg.userPermissions)) return '';
   // If argument seems required, add required arg to usage string.
   else if (!arg.match && arg.type && arg.prompt) return ` <${arg.id}>`;
   // If argument seems optional, add optional arg to usage string.
