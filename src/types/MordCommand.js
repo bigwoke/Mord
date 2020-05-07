@@ -1,4 +1,5 @@
 const { Command } = require('discord-akairo');
+const buildUsageString = require('../helpers/usage');
 
 /**
  * Extension of Command class made to apply new properties/methods
@@ -10,6 +11,13 @@ const { Command } = require('discord-akairo');
 class MordCommand extends Command {
   constructor (id, opts) {
     super(id, opts);
+
+    /**
+     * Array of command arguments if applicable.
+     * @type {Array<Object>}
+     * @default null
+     */
+    this.args = this.args || opts.args || null;
 
     /**
      * Whether the command message should self-destruct.
@@ -25,12 +33,6 @@ class MordCommand extends Command {
      * @default false
      */
     this.protected = opts.protected || false;
-
-    /**
-     * Command usage template for help command autofill.
-     * @type {string}
-     */
-    this.usage = opts.usage || MordCommand.usage(id, opts);
   }
 
   /**
@@ -52,25 +54,16 @@ class MordCommand extends Command {
   }
 
   /**
-   * Builds generic usage string for a given command ID
-   * @param {string} id - Command ID.
-   * @param {Object} opts - Argument options object.
-   * @returns {string}
+   * Builds a usage string for the given command using the environment/scope
+   * determined by the message and its context, including the channel, author,
+   * their permissions, and parameters of the command. A user without access
+   * to a command will get an undefined result from this method for the command.
+   * @param {Command} command - Instance of a command.
+   * @param {Message} message - Message prompting command run.
+   * @returns {string | undefined}
    */
-  static usage (id, opts) {
-    let usage = `${id}`;
-    if (!opts.args) return usage;
-
-    for (const arg of opts.args) {
-      // If argument seems required, add required argument to usage string.
-      if (!arg.match && arg.type && arg.prompt) usage += ` <${arg.id}>`;
-      // If argument seems optional, add optional argument to usage string.
-      if (!arg.match && !arg.type) usage += ` [<${arg.id}>]`;
-      // If argument is a flag match, add flag to usage string.
-      if (arg.match === 'flag') usage += ` [${arg.flag}]`;
-    }
-
-    return usage;
+  static buildUsage (command, message) {
+    return buildUsageString(command, message);
   }
 }
 
