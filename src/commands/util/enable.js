@@ -8,15 +8,13 @@ class EnableCommand extends Command {
       aliases: ['enable'],
       category: 'util',
       description: 'Enables the specified command in the current guild if ' +
-        'disabled, or globally (not in each guild) with the --global flag. ' +
-        'Categories must be prefixed with `category:` to distinguish them ' +
-        'from commands.',
+        'disabled. Categories must be prefixed with `category:` to ' +
+        'distinguish them from commands.',
       destruct: 10000,
       protected: true,
       cooldown: 5000,
       ratelimit: 2,
-      userPermissions: 'ADMINISTRATOR',
-      usage: 'enable {<command> | category:<category>} [--global]',
+      userPermissions: 'MANAGE_GUILD',
       args: [
         {
           id: 'mod',
@@ -30,7 +28,8 @@ class EnableCommand extends Command {
         {
           id: 'global',
           match: 'flag',
-          flag: '--global'
+          flag: '--global',
+          ownerOnly: true
         }
       ]
     });

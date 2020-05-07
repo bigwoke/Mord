@@ -13,12 +13,14 @@ class PrefixCommand extends Command {
       ratelimit: 2,
       args: [
         {
-          id: 'prefix'
+          id: 'prefix',
+          userPermissions: 'MANAGE_CHANNELS'
         },
         {
           id: 'global',
           match: 'flag',
-          flag: '--global'
+          flag: '--global',
+          ownerOnly: true
         }
       ]
     });
@@ -47,7 +49,7 @@ class PrefixCommand extends Command {
     }
 
     // In guild scope, if member has permission, set prefix.
-    if (isOwner || message.member.hasPermission('MANAGE_MESSAGES')) {
+    if (isOwner || message.member.hasPermission(args.prefix.userPermissions)) {
       return 'setGuild';
     }
 
@@ -74,7 +76,7 @@ class PrefixCommand extends Command {
       setGuild: `Prefix in \`${name}\` is now: \`${args.prefix}\``,
       resetGlobal: `Global prefix reset to default: \`${cfg.client.prefix}\``,
       resetGuild: `Prefix in \`${name}\` reset to: \`${currentGlobal}\``,
-      info: '\nUsers with the "Manage Messages" permission can change this.'
+      info: '\nUsers with the "Manage Channels" permission can change this.'
     };
 
     if (['setGlobal', 'setGuild'].includes(action) && isReset) {
@@ -90,7 +92,7 @@ class PrefixCommand extends Command {
 
     // If the user lacks permission to change prefix, append appropriate info.
     response += action === 'returnGuild' && args.prefix
-      ? response += responses.info
+      ? responses.info
       : '';
 
     this.send(message, response);

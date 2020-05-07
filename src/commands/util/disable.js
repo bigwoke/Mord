@@ -8,14 +8,13 @@ class DisableCommand extends Command {
       aliases: ['disable'],
       category: 'util',
       description: 'Disables the specified command or category in the current ' +
-        'guild, or globally with the --global flag. Categories must be prefixed ' +
-        'with `category:` to distinguish them from commands.',
+        'guild. Categories must be prefixed with `category:` to distinguish ' +
+        'them from commands.',
       destruct: 10000,
       protected: true,
       cooldown: 5000,
       ratelimit: 2,
-      userPermissions: 'ADMINISTRATOR',
-      usage: 'disable {<command> | category:<category>} [--global]',
+      userPermissions: 'MANAGE_GUILD',
       args: [
         {
           id: 'mod',
@@ -29,7 +28,8 @@ class DisableCommand extends Command {
         {
           id: 'global',
           match: 'flag',
-          flag: '--global'
+          flag: '--global',
+          ownerOnly: true
         }
       ]
     });
