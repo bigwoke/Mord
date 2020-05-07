@@ -20,6 +20,7 @@ class EnableCommand extends Command {
           id: 'mod',
           type: EnableCommand.determineType,
           prompt: {
+            breakout: false,
             start: 'Which command or category do you want to enable? ' +
             'Categories must use `category:` flag, i.e. `category:name`.',
             retry: 'That command or category does not exist, try again.'
