@@ -88,13 +88,7 @@ function buildUsageString (command, message) {
   // If the command doesn't pass these checks, skip it.
   if (!checkPermissionsAndScope(command, message, isOwner, userPerms)) return;
 
-  const { settings } = command.client;
-  const prefix = message.guild
-    ? settings.get(message.guild.id, 'prefix') ||
-      settings.get('global', 'prefix')
-    : '';
-
-  let usage = `${prefix}${command.id}`;
+  let usage = `${command.id}`;
 
   if (command.args) {
     for (const arg of command.args) {
