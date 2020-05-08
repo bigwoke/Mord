@@ -1,4 +1,5 @@
 const Command = require('../../types/MordCommand');
+const { Permissions } = require('discord.js');
 const { isDM } = require('../../helpers/tools');
 
 class HelpCommand extends Command {
@@ -13,12 +14,16 @@ class HelpCommand extends Command {
         'When supplied with an argument, the help command will output more ' +
         'specific information about a command, including its usage, category, ' +
         'details, and examples if there are any.',
-      examples: [
-        'help',
-        'help prefix'
-      ],
       destruct: 3000,
       cooldown: 3000,
+      examples: [
+        {
+          text: 'help'
+        },
+        {
+          text: 'help prefix'
+        }
+      ],
       args: [
         {
           id: 'command'
@@ -30,23 +35,30 @@ class HelpCommand extends Command {
   exec (message, args) {
     let resp = '';
 
+    // If a command is given and it exists, display specific info, else invalid.
     if (args.command) {
       const command = this.handler.modules.get(args.command);
-      resp = this.commandHelp(message, command);
+      resp = command
+        ? this.commandHelp(message, command)
+        : this.invalidCommand();
     } else {
       resp = this.generalHelp(message);
     }
 
+    // Only send a short message in a text channel to prevent spam.
     if (!isDM(message)) this.send(message, 'Check your DMs for a help message.');
     message.author.send(resp);
   }
 
   commandHelp (message, command) {
-    if (!command) return this.invalidCommand();
+    // No usage will be returned if the user doesn't have adequte privileges.
     const usage = Command.buildUsage(command, message);
     if (!usage) return this.invalidCommand();
 
-    const categoryName = command.categoryID[0].toUpperCase() + command.categoryID.slice(1);
+    // Capitalize the first letter of the category ID
+    const categoryName =
+      command.categoryID[0].toUpperCase() +
+      command.categoryID.slice(1);
 
     let resp = `__**Command Info**__ - "**${command.id}**" command: ` +
       `${command.description}\n\n` +
@@ -55,7 +67,31 @@ class HelpCommand extends Command {
       `**Category:** ${categoryName} (category:${command.categoryID})\n` +
       `**Details:** ${command.details}\n`;
 
-    if (command.examples) resp += `**Examples:**\n\`${command.examples.join('`\n`')}\``;
+    if (command.examples) resp += this.appendExamples(message, command);
+
+    return resp;
+  }
+
+  appendExamples (message, command) {
+    const isOwner = this.client.isOwner(message.author);
+
+    // This method is described well in src/helpers/usage under [1] tag.
+    const userPerms = message.guild
+      ? message.member.permissions
+      : new Permissions(isOwner * 8);
+
+    let resp = '**Examples:**\n';
+
+    // If the example object fails a permission test, don't add it.
+    for (const ex of command.examples) {
+      let pass = true;
+      if (ex.ownerOnly && !isOwner) pass = false;
+      if (ex.userPermissions && !userPerms.has(ex.userPermissions)) pass = false;
+      if (pass) resp += `\`${ex.text}\` ${ex.notes ? `(${ex.notes})` : ''}\n`;
+    }
+
+    // If there are no examples (one would include a grave), return empty.
+    if (!resp.includes('`')) return '';
 
     return resp;
   }
@@ -65,6 +101,7 @@ class HelpCommand extends Command {
     const guildName = message.guild ? `"${message.guild.name}"` : 'DM';
     const guildID = message.guild ? message.guild.id : 'global';
 
+    // Get prefix for guild, or use global if it doesn't exist.
     const pf = this.client.settings.get(
       guildID,
       'prefix',
@@ -91,21 +128,24 @@ class HelpCommand extends Command {
   }
 
   appendCategory (message, category) {
-    const categoryName = category.id[0].toUpperCase() + category.id.slice(1);
-    const msgType = message.channel.type;
+    const { type } = message.channel;
+    const categoryName =
+      category.id[0].toUpperCase() +
+      category.id.slice(1);
 
     let commands = [];
     for (const cmd of category.values()) {
-      if (!cmd.channel) commands.push(cmd);
-      else if (cmd.channel === msgType) commands.push(cmd);
-      else if (cmd.channel === 'guild' && msgType === 'text') commands.push(cmd);
+      if (!cmd.channel || cmd.channel === type) commands.push(cmd);
+      else if (cmd.channel === 'guild' && type === 'text') commands.push(cmd);
     }
 
+    // Filter commands without usage (meaning user is missing permissions).
     commands = commands.filter(cmd => {
       const usage = Command.buildUsage(cmd, message);
       return typeof usage !== 'undefined';
     });
 
+    // If the command array is empty, don't add it.
     if (commands.length === 0) return '';
 
     let resp = `\n__${categoryName}__\n`;
