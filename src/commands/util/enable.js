@@ -7,14 +7,31 @@ class EnableCommand extends Command {
     super('enable', {
       aliases: ['enable'],
       category: 'util',
-      description: 'Enables the specified command in the current guild if ' +
-        'disabled. Categories must be prefixed with `category:` to ' +
-        'distinguish them from commands.',
+      description: 'Enables a command or category in a guild.',
+      details: 'Enables the specified command or category in the current ' +
+        'guild if disabled. Categories must be prefixed with `category:` to ' +
+        'distinguish them from commands. Will prompt for a module to enable ' +
+        'if none is provided, and will not breakout if a command is used ' +
+        'mid-prompt. This command, like disable, requires "Manage Server."',
       destruct: 10000,
       protected: true,
       cooldown: 5000,
       ratelimit: 2,
       userPermissions: 'MANAGE_GUILD',
+      examples: [
+        {
+          text: 'enable',
+          notes: 'prompts for argument'
+        },
+        {
+          text: 'enable prefix'
+        },
+        {
+          text: 'enable prefix --global',
+          notes: 'enables prefix command across all guilds',
+          ownerOnly: true
+        }
+      ],
       args: [
         {
           id: 'mod',

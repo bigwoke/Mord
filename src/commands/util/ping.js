@@ -6,6 +6,11 @@ class PingCommand extends Command {
       aliases: ['ping'],
       category: 'util',
       description: 'Displays round-trip and heartbeat latency.',
+      details: 'Round-trip time is calculated by the difference between the ' +
+        'time the user message was received by Discord and the time the bot ' +
+        'response was received by Discord. Heartbeat latency is provided by ' +
+        'the Discord websocket API, and is representative of the connection ' +
+        'between the bot shard and the Discord server cluster it connects to.',
       destruct: 5000,
       cooldown: 5000
     });

@@ -8,9 +8,28 @@ class PrefixCommand extends Command {
       aliases: ['prefix'],
       category: 'util',
       description: 'Displays or changes the current prefix.',
+      details: 'Depending on the context, this command will return either ' +
+        'the current guild prefix (if in a guild), or the global bot prefix, ' +
+        'which also acts as the default prefix if no custom one is set in a ' +
+        'guild. It will indicate when the guild prefix is the same as the ' +
+        'global prefix, and guild members with "Manage Channels" have the ' +
+        'ability to change the guild prefix.',
       destruct: 10000,
       cooldown: 5000,
       ratelimit: 2,
+      examples: [
+        {
+          text: 'prefix'
+        },
+        {
+          text: 'prefix ?',
+          userPermissions: 'MANAGE_CHANNELS'
+        },
+        {
+          text: 'prefix >> --global',
+          ownerOnly: true
+        }
+      ],
       args: [
         {
           id: 'prefix',

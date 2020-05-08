@@ -7,9 +7,21 @@ class ReloadCommand extends Command {
       aliases: ['reload'],
       category: 'util',
       description: 'Reloads the specified command.',
+      details: 'Removes the module from collections containing it, and ' +
+        'deletes its entry from the require cache, completely reloading the ' +
+        'module file.',
       ownerOnly: true,
       editable: true,
       destruct: 5000,
+      examples: [
+        {
+          text: 'reload',
+          notes: 'prompts for argument'
+        },
+        {
+          text: 'reload prefix'
+        }
+      ],
       args: [
         {
           id: 'command',

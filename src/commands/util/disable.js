@@ -7,14 +7,32 @@ class DisableCommand extends Command {
     super('disable', {
       aliases: ['disable'],
       category: 'util',
-      description: 'Disables the specified command or category in the current ' +
+      description: 'Disables a command or category in a guild.',
+      details: 'Disables the specified command or category in the current ' +
         'guild. Categories must be prefixed with `category:` to distinguish ' +
-        'them from commands.',
+        'them from commands. Will prompt for a module to disable if none is ' +
+        'initially given, and will not breakout if a command is used ' +
+        'mid-prompt. Some commands are protected and cannot be disabled. ' +
+        'This command requires "Manage Server" permission in a guild.',
       destruct: 10000,
       protected: true,
       cooldown: 5000,
       ratelimit: 2,
       userPermissions: 'MANAGE_GUILD',
+      examples: [
+        {
+          text: 'disable',
+          notes: 'prompts for argument'
+        },
+        {
+          text: 'disable prefix'
+        },
+        {
+          text: 'disable prefix --global',
+          notes: 'disables prefix command across all guilds',
+          ownerOnly: true
+        }
+      ],
       args: [
         {
           id: 'mod',

@@ -36,7 +36,7 @@ class MordCommand extends Command {
 
     /**
      * Array of command usage examples for help text.
-     * @type {Array<string>}
+     * @type {Array<Object>}
      * @default null
      */
     this.examples = opts.examples || null;
