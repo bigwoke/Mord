@@ -11,8 +11,7 @@ class PingCommand extends Command {
         'response was received by Discord. Heartbeat latency is provided by ' +
         'the Discord websocket API, and is representative of the connection ' +
         'between the bot shard and the Discord server cluster it connects to.',
-      destruct: 5000,
-      cooldown: 5000
+      destruct: 5000
     });
   }
 

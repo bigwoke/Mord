@@ -15,7 +15,6 @@ class PrefixCommand extends Command {
         'global prefix, and guild members with "Manage Channels" have the ' +
         'ability to change the guild prefix.',
       destruct: 10000,
-      cooldown: 5000,
       ratelimit: 2,
       examples: [
         {

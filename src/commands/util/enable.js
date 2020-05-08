@@ -15,7 +15,6 @@ class EnableCommand extends Command {
         'mid-prompt. This command, like disable, requires "Manage Server."',
       destruct: 10000,
       protected: true,
-      cooldown: 5000,
       ratelimit: 2,
       userPermissions: 'MANAGE_GUILD',
       examples: [

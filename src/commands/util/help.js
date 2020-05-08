@@ -16,7 +16,6 @@ class HelpCommand extends Command {
         'details, and examples if there are any.',
       destruct: 3000,
       protected: true,
-      cooldown: 3000,
       examples: [
         {
           text: 'help'

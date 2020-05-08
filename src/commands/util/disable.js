@@ -16,7 +16,6 @@ class DisableCommand extends Command {
         'This command requires "Manage Server" permission in a guild.',
       destruct: 10000,
       protected: true,
-      cooldown: 5000,
       ratelimit: 2,
       userPermissions: 'MANAGE_GUILD',
       examples: [

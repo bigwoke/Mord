@@ -56,6 +56,7 @@ class MordClient extends AkairoClient {
       commandUtil: true,
       handleEdits: true,
       storeMessages: true,
+      defaultCooldown: 3000,
       prefix: m => {
         const globalPrefix = this.settings.get('global', 'prefix');
         return m.channel.type === 'dm'
