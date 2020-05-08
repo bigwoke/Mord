@@ -17,15 +17,29 @@ class MordCommand extends Command {
      * @type {Array<Object>}
      * @default null
      */
-    this.args = this.args || opts.args || null;
+    this.args = opts.args || null;
+
+    /**
+     * Detailed description of command.
+     * @type {string}
+     * @default null
+     */
+    this.details = opts.details || opts.description || null;
 
     /**
      * Whether the command message should self-destruct.
      * Falsey for never, otherwise time in ms.
      * @type {number}
-     * @default 0
+     * @default null
      */
     this.destruct = opts.destruct || null;
+
+    /**
+     * Array of command usage examples for help text.
+     * @type {Array<string>}
+     * @default null
+     */
+    this.examples = opts.examples || null;
 
     /**
      * Whether this command should be protected from disabling.
