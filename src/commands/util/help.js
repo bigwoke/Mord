@@ -26,7 +26,8 @@ class HelpCommand extends Command {
       ],
       args: [
         {
-          id: 'command'
+          id: 'command',
+          description: 'command to get information for'
         }
       ]
     });
@@ -68,15 +69,38 @@ class HelpCommand extends Command {
       `**Category:** ${categoryName} (category:${command.categoryID})\n` +
       `**Details:** ${command.details}\n`;
 
+    if (command.args) resp += this.appendArguments(message, command);
     if (command.examples) resp += this.appendExamples(message, command);
 
+    return resp;
+  }
+
+  appendArguments (message, command) {
+    const isOwner = this.client.isOwner(message.author);
+
+    // This method is described well in src/helpers/usage under [1] tag.
+    const userPerms = message.guild
+      ? message.member.permissions
+      : new Permissions(isOwner * 8);
+
+    let resp = '**Arguments:**\n';
+
+    // If the argument object fails a permission test, don't add it.
+    for (const arg of command.args) {
+      let pass = true;
+      if (arg.ownerOnly && !isOwner) pass = false;
+      if (arg.userPermissions && !userPerms.has(arg.userPermissions)) pass = false;
+      if (pass) resp += `\`${arg.id}\` - ${arg.description}\n`;
+    }
+
+    // If there are no arguments (one would include a grave), return empty.
+    if (!resp.includes('`')) return '';
     return resp;
   }
 
   appendExamples (message, command) {
     const isOwner = this.client.isOwner(message.author);
 
-    // This method is described well in src/helpers/usage under [1] tag.
     const userPerms = message.guild
       ? message.member.permissions
       : new Permissions(isOwner * 8);
@@ -91,9 +115,7 @@ class HelpCommand extends Command {
       if (pass) resp += `\`${ex.text}\` ${ex.notes ? `(${ex.notes})` : ''}\n`;
     }
 
-    // If there are no examples (one would include a grave), return empty.
     if (!resp.includes('`')) return '';
-
     return resp;
   }
 
