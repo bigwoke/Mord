@@ -90,7 +90,7 @@ class HelpCommand extends Command {
       let pass = true;
       if (arg.ownerOnly && !isOwner) pass = false;
       if (arg.userPermissions && !userPerms.has(arg.userPermissions)) pass = false;
-      if (pass) resp += `\`${arg.id}\` - ${arg.description}\n`;
+      if (pass) resp += `\`${arg.id}\` ${arg.description ? `- ${arg.description}` : ''}\n`;
     }
 
     // If there are no arguments (one would include a grave), return empty.
@@ -141,8 +141,8 @@ class HelpCommand extends Command {
       'In DMs, a prefix is not necessary. Commands can always be run using ' +
       `\`@${at}\` as a prefix, regardless of guild or DM.\n\n` +
       'Use `help <command>` for details on any specific command.\n' +
-      'In command usage, variables in brackets `[]` are optional, and those ' +
-      'in angle brackets `<>` are required. All other text must be as-is.\n\n' +
+      'In command usage, angle brackets `<>` indicate variables. Those in ' +
+      'brackets `[]` are optional. Non-variable text must be used as-is.\n\n' +
       `__**Commands *available to you* in ${guildName}:**__\n`;
 
     for (const category of this.handler.categories.values()) {
