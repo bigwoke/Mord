@@ -65,7 +65,7 @@ class HelpCommand extends Command {
       `${command.description}\n\n` +
       `**Usage:** \`${usage}\`\n` +
       `**Aliases:** \`${command.aliases.join('`, `')}\`\n` +
-      `${command.protected ? '**Protected:** Yes' : ''}` +
+      `${command.protected ? '**Protected:** Yes\n' : ''}` +
       `**Category:** ${categoryName} (category:${command.categoryID})\n` +
       `**Details:** ${command.details}\n`;
 
