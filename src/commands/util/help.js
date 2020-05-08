@@ -15,6 +15,7 @@ class HelpCommand extends Command {
         'specific information about a command, including its usage, category, ' +
         'details, and examples if there are any.',
       destruct: 3000,
+      protected: true,
       cooldown: 3000,
       examples: [
         {
@@ -64,6 +65,7 @@ class HelpCommand extends Command {
       `${command.description}\n\n` +
       `**Usage:** \`${usage}\`\n` +
       `**Aliases:** \`${command.aliases.join('`, `')}\`\n` +
+      `${command.protected ? '**Protected:** Yes' : ''}` +
       `**Category:** ${categoryName} (category:${command.categoryID})\n` +
       `**Details:** ${command.details}\n`;
 
@@ -115,10 +117,12 @@ class HelpCommand extends Command {
 
     resp += `To run commands in ${guildName}, use \`${pf}<command>\` or ` +
       `\`@${at} <command>\`. For example, \`${pf}prefix\` or \`@${at} prefix\`.\n` +
-      'To run commands in DM, a prefix is not necessary. Commands can always ' +
-      `be run using \`@${at}\` as a prefix, regardless of guild or DM.\n\n` +
-      'Use `help <command>` for details on any specific command.\n\n' +
-      `__**Available commands in ${guildName}:**__\n`;
+      'In DMs, a prefix is not necessary. Commands can always be run using ' +
+      `\`@${at}\` as a prefix, regardless of guild or DM.\n\n` +
+      'Use `help <command>` for details on any specific command.\n' +
+      'In command usage, variables in brackets `[]` are optional, and those ' +
+      'in angle brackets `<>` are required. All other text must be as-is.\n\n' +
+      `__**Commands *available to you* in ${guildName}:**__\n`;
 
     for (const category of this.handler.categories.values()) {
       resp += this.appendCategory(message, category);
