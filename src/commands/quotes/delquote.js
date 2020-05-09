@@ -9,9 +9,11 @@ class DelQuoteCommand extends Command {
       channel: 'guild',
       description: 'Deletes a quote by number.',
       details: 'This command will delete a quote with the given number, and ' +
-        'that number __will not__ be available for use again in the guild.',
+        'that number __will not__ be available for use again in the guild. ' +
+        'This requires a role with the "Manage Messages" permission to use.',
       destruct: 10000,
       cooldown: 5000,
+      userPermissions: 'MANAGE_MESSAGES',
       examples: [
         {
           text: 'delquote',
