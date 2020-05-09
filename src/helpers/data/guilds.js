@@ -37,8 +37,10 @@ function setupGuild (client, guild) {
     settings.set(guild.id, 'prefix', cfg.client.prefix);
   }
 
-  // If the settings cache does not have a guild, set the guild's name in its record.
-  if (!settings.items.has(guild.id)) settings.set(guild.id, 'name', guild.name || 'global');
+  // If the existing guild name does not match, set the guild's name in its record.
+  if (guild.name && settings.get(guild.id, 'name') !== guild.name) {
+    settings.set(guild.id, 'name', guild.name);
+  }
 
   assignDefaults(client, guild);
 }
