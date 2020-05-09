@@ -34,6 +34,15 @@ class Data {
   }
 
   /**
+   * Deletes a quote document from the database.
+   * @param {Guild} guild - Discord Guild instance.
+   * @param {number} number - Number of quote to delete.
+   */
+  async delQuote (guild, number) {
+    return quotes.delQuote(await this.db, guild, number);
+  }
+
+  /**
    * Loads default values for settings of all guilds in
    * view of the client, and global settings.
    */
