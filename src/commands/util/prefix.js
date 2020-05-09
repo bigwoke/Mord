@@ -32,7 +32,8 @@ class PrefixCommand extends Command {
       args: [
         {
           id: 'prefix',
-          userPermissions: 'MANAGE_CHANNELS'
+          userPermissions: 'MANAGE_CHANNELS',
+          description: 'New prefix to use.'
         },
         {
           id: 'global',

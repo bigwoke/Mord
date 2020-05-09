@@ -36,6 +36,7 @@ class DisableCommand extends Command {
         {
           id: 'mod',
           type: DisableCommand.determineType,
+          description: 'Module to disable, either command or category.',
           prompt: {
             breakout: false,
             start: 'Which command or category do you want to disable? ' +

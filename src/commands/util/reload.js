@@ -26,6 +26,7 @@ class ReloadCommand extends Command {
         {
           id: 'command',
           type: Argument.union('command', 'commandAlias'),
+          description: 'Command to reload.',
           prompt: {
             start: 'Which command do you want to reload?',
             retry: 'Couldn\'t find that command, try again.',

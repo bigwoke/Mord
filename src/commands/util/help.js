@@ -27,7 +27,7 @@ class HelpCommand extends Command {
       args: [
         {
           id: 'command',
-          description: 'command to get information for'
+          description: 'Command to get info for.'
         }
       ]
     });
@@ -90,12 +90,13 @@ class HelpCommand extends Command {
       let pass = true;
       if (arg.ownerOnly && !isOwner) pass = false;
       if (arg.userPermissions && !userPerms.has(arg.userPermissions)) pass = false;
+      if (arg.flag && arg.flag === '--global' && !arg.description) arg.description =
+        'Whether this command takes effect globally.';
       if (pass) resp += `\`${arg.id}\` ${arg.description ? `- ${arg.description}` : ''}\n`;
     }
 
     // If there are no arguments (one would include a grave), return empty.
-    if (!resp.includes('`')) return '';
-    return resp;
+    return resp.includes('`') ? resp : '';
   }
 
   appendExamples (message, command) {
@@ -115,8 +116,7 @@ class HelpCommand extends Command {
       if (pass) resp += `\`${ex.text}\` ${ex.notes ? `(${ex.notes})` : ''}\n`;
     }
 
-    if (!resp.includes('`')) return '';
-    return resp;
+    return resp.includes('`') ? resp : '';
   }
 
 

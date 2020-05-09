@@ -35,6 +35,7 @@ class EnableCommand extends Command {
         {
           id: 'mod',
           type: EnableCommand.determineType,
+          description: 'Module to enable, either command or category.',
           prompt: {
             breakout: false,
             start: 'Which command or category do you want to enable? ' +
