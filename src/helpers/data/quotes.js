@@ -56,7 +56,7 @@ function addQuote (mongo, guild, document) {
       .insertOne(document)
       .then(r => {
         if (r.result.ok === 1) {
-          log.verbose(`[DB] Quote #${document.number} in "${guild.name}" added.`);
+          log.verbose(`[DB] + Quote #${document.number} in "${guild.name}" added.`);
         }
 
         return { result: r.result, op: r.ops[0] };
@@ -68,6 +68,25 @@ function addQuote (mongo, guild, document) {
   });
 }
 
+function delQuote (mongo, guild, number) {
+  const filter = { number: number };
+
+  return mongo.db(`${cfg.db.name}-Quotes`).collection(guild.id)
+    .findOneAndDelete(filter)
+    .then(res => {
+      if (res.value) {
+        log.verbose(`[DB] - Quote #${number} in "${guild.name}" removed.`);
+      }
+
+      return res;
+    })
+    .catch(err => {
+      log.error('[DB] %o', err);
+      throw err;
+    });
+}
+
 module.exports = {
-  addQuote
+  addQuote,
+  delQuote
 };
