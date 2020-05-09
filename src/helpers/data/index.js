@@ -1,5 +1,6 @@
 const guilds = require('./guilds');
 const mongo = require('./mongo');
+const quotes = require('./quotes');
 
 /**
  * Class containing helper functions for connecting the bot
@@ -21,6 +22,15 @@ class Data {
      * @type {MongoClient}
      */
     this.db = db;
+  }
+
+  /**
+   * Adds a quote document to the database.
+   * @param {Guild} guild - Discord Guild instance.
+   * @param {Object} document - Quote document to insert into DB.
+   */
+  async addQuote (guild, document) {
+    return quotes.addQuote(await this.db, guild, document);
   }
 
   /**
