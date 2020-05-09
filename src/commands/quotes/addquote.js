@@ -2,7 +2,6 @@ const Command = require('../../types/MordCommand');
 const log = require('../../helpers/log');
 
 class AddQuoteCommand extends Command {
-  // eslint-disable-next-line max-lines-per-function
   constructor () {
     super('addquote', {
       aliases: ['addquote', 'add-quote', 'newquote'],
@@ -73,7 +72,7 @@ class AddQuoteCommand extends Command {
       if (res.result.ok === 1) {
         const num = res.op.number;
         const { tag } = args.author;
-        this.send(message, `Quote ${num} by ${tag} added successfully.`);
+        this.send(message, `Quote #${num} by ${tag} added successfully.`);
       } else {
         this.send(message, 'There was an issue adding that quote.');
       }
