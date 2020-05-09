@@ -61,7 +61,10 @@ function addQuote (mongo, guild, document) {
 
         return { result: r.result, op: r.ops[0] };
       })
-      .catch(err => log.error('[DB] %o', err));
+      .catch(err => {
+        log.error('[DB] %o', err);
+        throw err;
+      });
   });
 }
 
