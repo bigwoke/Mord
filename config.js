@@ -11,7 +11,7 @@ const config = {
   },
   db: {
     url: process.env.DB_URL,
-    name: process.env.DB_NAME || 'settings',
+    name: process.env.DB_NAME || 'Mord',
     opts: { useNewUrlParser: true, useUnifiedTopology: true }
   }
 };
