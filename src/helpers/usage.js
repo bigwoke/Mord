@@ -16,11 +16,13 @@ function appendArgumentUsage (arg, isOwner, userPerms) {
   // If argument has permission requirement, and user doesn't have them, skip.
   else if (arg.userPermissions && !userPerms.has(arg.userPermissions)) return '';
   // If argument seems required, add required arg to usage string.
-  else if (!arg.match && arg.type && arg.prompt) return ` <${arg.id}>`;
+  else if (!arg.match && arg.prompt && !arg.prompt.optional) return ` <${arg.id}>`;
   // If argument seems optional, add optional arg to usage string.
   else if (!arg.match && !arg.type) return ` [<${arg.id}>]`;
   // If argument is a flag match, add flag to usage string.
   else if (arg.match === 'flag') return ` [${arg.flag}]`;
+  // If argument is an option match, add argument to usage string.
+  else if (arg.match === 'option') return ` [${arg.flag} <${arg.id}>]`;
   // Failing all else, just assume it's optional for now.
   return ` [<${arg.id}>]`;
 }
@@ -40,10 +42,6 @@ function appendArgumentUsage (arg, isOwner, userPerms) {
 function checkPermissionsAndScope (command, message, isOwner, userPerms) {
   // If the command is owner only, and the author is not owner, return false.
   if (command.ownerOnly && !isOwner) return false;
-  // If the command is DM-only, and message is not from a DM, return false.
-  if (command.channel === 'dm' && !isDM(message)) return false;
-  // If the command is guild-only, and message is not from a guild, return false.
-  if (command.channel === 'guild' && message.channel.type !== 'text') return false;
 
   // If command has permission restrictions and the user doesn't have them...
   if (command.userPermissions && !userPerms.has(command.userPermissions)) {
