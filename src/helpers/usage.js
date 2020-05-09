@@ -1,5 +1,4 @@
 const { Permissions } = require('discord.js');
-const { isDM } = require('../helpers/tools');
 
 /**
  * Here, a command's argument will either be skipped due to permissions or
