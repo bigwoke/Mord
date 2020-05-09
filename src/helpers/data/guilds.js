@@ -1,5 +1,6 @@
 const { isProtected } = require('../tools');
 const cfg = require('../../../config');
+const log = require('../../helpers/log');
 
 /**
  * Assigns default values for commands and categories to a given guild.
@@ -39,6 +40,8 @@ function setupGuild (client, guild) {
 
   // If the existing guild name does not match, set the guild's name in its record.
   if (guild.name && settings.get(guild.id, 'name') !== guild.name) {
+    log.silly(`[DB] Since last start, guild ${guild.id} changed name from ` +
+      `"${settings.get(guild.id, 'name')}" to "${guild.name}."`);
     settings.set(guild.id, 'name', guild.name);
   }
 
@@ -54,6 +57,7 @@ function setupCurrentGuilds (client) {
   setupGuild(client, { id: 'global' });
   const guildsCache = client.guilds.cache;
   for (const guild of guildsCache.values()) setupGuild(client, guild);
+  log.verbose('[DB] Guild data setup is complete!');
 }
 
 module.exports = {
