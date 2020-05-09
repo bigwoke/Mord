@@ -164,10 +164,13 @@ class HelpCommand extends Command {
       else if (cmd.channel === 'guild' && type === 'text') commands.push(cmd);
     }
 
-    // Filter commands without usage (meaning user is missing permissions).
+    // Filter commands without usage and restricted to different channel type.
     commands = commands.filter(cmd => {
-      const usage = Command.buildUsage(cmd, message);
-      return typeof usage !== 'undefined';
+      const usage = typeof Command.buildUsage(cmd, message) !== 'undefined';
+      const dmMatch = cmd.channel === 'dm' && isDM(message);
+      const guildMatch = cmd.channel === 'guild' && message.channel.type === 'text';
+      const channelMatch = !cmd.channel || dmMatch || guildMatch;
+      return usage && channelMatch;
     });
 
     // If the command array is empty, don't add it.
