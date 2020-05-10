@@ -38,7 +38,7 @@ class HelpCommand extends Command {
 
     // If a command is given and it exists, display specific info, else invalid.
     if (args.command) {
-      const command = this.handler.modules.get(args.command);
+      const command = this.handler.modules.get(args.command.toLowerCase());
       resp = command
         ? this.commandHelp(message, command)
         : this.invalidCommand();
@@ -65,8 +65,8 @@ class HelpCommand extends Command {
       `${command.description}\n\n` +
       `**Usage:** \`${usage}\`\n` +
       `**Aliases:** \`${command.aliases.join('`, `')}\`\n` +
-      `${command.protected ? '**Protected:** Yes\n' : ''}` +
       `**Category:** ${categoryName} (category:${command.categoryID})\n` +
+      `${this.appendConditionals(command)}` +
       `**Details:** ${command.details}\n`;
 
     if (command.args) resp += this.appendArguments(message, command);
@@ -97,6 +97,32 @@ class HelpCommand extends Command {
 
     // If there are no arguments (one would include a grave), return empty.
     return resp.includes('`') ? resp : '';
+  }
+
+  appendConditionals (command) {
+    let resp =
+      `${command.protected ? '**Protected:** Yes\n' : ''}` +
+      `${command.ownerOnly ? '**Owner Only:** Yes\n' : ''}`;
+
+    if (command.userPermissions) {
+      let rawPerms = Array.isArray(command.userPermissions)
+        ? command.userPermissions.join(', ')
+        : command.userPermissions;
+
+      // Set all characters to lowercase, split by space & underscore.
+      rawPerms = rawPerms.toLowerCase().split(/[\s_]/gu);
+
+      let perms = [];
+      for (const word of rawPerms) {
+        perms.push(`${word[0].toUpperCase()}${word.slice(1)}`);
+      }
+
+      perms = perms.join(' ');
+
+      resp += `**Permissions:** ${perms}\n`;
+    }
+
+    return resp;
   }
 
   appendExamples (message, command) {
