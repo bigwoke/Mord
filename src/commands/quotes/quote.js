@@ -12,7 +12,12 @@ class QuoteCommand extends Command {
       details: 'When provided with no arguments, this will return a random ' +
         'quote from that guild, displaying the quote, author, and date. ' +
         'Providing a number will return the quote with that number, and ' +
-        'providing a user will return a random quote by that user.',
+        'providing a user will return a random quote by that user.' +
+        'Requesting a non-specific quote (random or user search), the ' +
+        'returned quote will be given a cooldown amounting to the command ' +
+        'cooldown time, multiplied by the amount of quotes stored for that ' +
+        'guild. This is done to prevent excessive duplicates, and quotes ' +
+        'still be accessed during this time by specifying their number. ',
       cooldown: 5000,
       examples: [
         { text: 'quote' },
