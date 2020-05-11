@@ -27,24 +27,24 @@ class HelpCommand extends Command {
       args: [
         {
           id: 'command',
-          description: 'Command to get info for.'
+          type: 'commandAlias',
+          description: 'Command to get info for.',
+          prompt: {
+            optional: true,
+            breakout: false,
+            retry: 'Could not find a command with that alias, please try again.',
+            ended: 'Ending prompts. If you need help, use this command without arguments.'
+          }
         }
       ]
     });
   }
 
   exec (message, args) {
-    let resp = '';
-
-    // If a command is given and it exists, display specific info, else invalid.
-    if (args.command) {
-      const command = this.handler.modules.get(args.command.toLowerCase());
-      resp = command
-        ? this.commandHelp(message, command)
-        : this.invalidCommand();
-    } else {
-      resp = this.generalHelp(message);
-    }
+    // If a command is given and it exists, display specific info, else general.
+    const resp = args.command
+      ? this.commandHelp(message, args.command)
+      : this.generalHelp(message);
 
     // Only send a short message in a text channel to prevent spam.
     if (!isDM(message)) this.send(message, 'Check your DMs for a help message.');
@@ -52,9 +52,9 @@ class HelpCommand extends Command {
   }
 
   commandHelp (message, command) {
-    // No usage will be returned if the user doesn't have adequte privileges.
+    // No usage will be returned if the user doesn't have adequate privileges.
     const usage = Command.buildUsage(command, message);
-    if (!usage) return this.invalidCommand();
+    if (!usage) return this.send(message, 'You do not have access to this command.');
 
     // Capitalize the first letter of the category ID
     const categoryName =
@@ -206,10 +206,6 @@ class HelpCommand extends Command {
     for (const cmd of commands) resp += `**${cmd.id}:** ${cmd.description}\n`;
 
     return resp;
-  }
-
-  invalidCommand () {
-    return 'That command could not be found, or help cannot be provided.';
   }
 }
 
