@@ -1,5 +1,6 @@
 const cfg = require('../../../config');
 const log = require('../../helpers/log');
+const { User } = require('discord.js');
 
 /**
  * This function finds, advances by one, and returns a quote counter sequence.
@@ -21,7 +22,7 @@ function advanceSequence (mongo, guild) {
       log.debug(`[DB] Advanced quote sequence for "${guild.name}" (${guild.id})`);
       return res;
     })
-    .catch(err => log.error('[DB] %o', err));
+    .catch(err => log.error('[DB] Error updating counter sequence: %o', err));
 }
 
 /**
@@ -35,7 +36,7 @@ function setQuoteIndex (mongo, guild) {
 
   mongo.db(`${cfg.db.name}-Quotes`).collection(guild.id)
     .createIndexes(indexSpecs)
-    .catch(err => log.error('[DB] %o', err));
+    .catch(err => log.error('[DB] Error creating index: %o', err));
 }
 
 /**
@@ -62,12 +63,19 @@ function addQuote (mongo, guild, document) {
         return { result: r.result, op: r.ops[0] };
       })
       .catch(err => {
-        log.error('[DB] %o', err);
+        log.error('[DB] Error adding quote: %o', err);
         throw err;
       });
   });
 }
 
+/**
+ * Deletes a specific quote from the database by number.
+ * @param {MongoClient} mongo - Instance of MongoClient with DB connections.
+ * @param {Guild} guild - Discord Guild instance.
+ * @param {number} number - Quote number to delete.
+ * @returns {CommandResult}
+ */
 function delQuote (mongo, guild, number) {
   const filter = { number: number };
 
@@ -81,12 +89,38 @@ function delQuote (mongo, guild, number) {
       return res;
     })
     .catch(err => {
-      log.error('[DB] %o', err);
+      log.error('[DB] Error deleting quote: %o', err);
+      throw err;
+    });
+}
+
+/**
+ * Gets a quote using the provided filter (random otherwise).
+ * @param {MongoClient} mongo - Instance of MongoClient with DB connections.
+ * @param {Guild} guild - Discord Guild instance.
+ * @param {number | User} filter - Filter used to get quote.
+ * @returns {AggregationCursor | CommandResult}
+ */
+function getQuote (mongo, guild, filter = null) {
+  const query = filter instanceof User
+    ? { 'author.id': filter.id }
+    : { number: filter };
+
+  const pipeline = filter
+    ? [{ $match: query }, { $sample: { size: 1 } }]
+    : [{ $sample: { size: 1 } }];
+
+  return mongo.db(`${cfg.db.name}-Quotes`).collection(guild.id)
+    .aggregate(pipeline).toArray()
+    .then(res => res[0])
+    .catch(err => {
+      log.error('[DB] Error getting quote: %o', err);
       throw err;
     });
 }
 
 module.exports = {
   addQuote,
-  delQuote
+  delQuote,
+  getQuote
 };

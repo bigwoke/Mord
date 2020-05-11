@@ -43,6 +43,15 @@ class Data {
   }
 
   /**
+   * Gets a quote using the provided filter (or random).
+   * @param {Guild} guild - Discord Guild instance.
+   * @param {number | User} filter - Filter used to get quote.
+   */
+  async getQuote (guild, filter) {
+    return quotes.getQuote(await this.db, guild, filter);
+  }
+
+  /**
    * Loads default values for settings of all guilds in
    * view of the client, and global settings.
    */
