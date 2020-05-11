@@ -14,15 +14,19 @@ class CommandFinishedListener extends Listener {
     message.util.addMessage(message);
 
     if (!command.destruct) return;
-    message.util.messages.forEach(async msg => {
-      if (isPromise(msg)) msg = await msg;
-      if (msg instanceof Message && msg.channel.type !== 'dm') {
-        msg.delete({
-          timeout: command.destruct,
-          reason: 'command cleanup'
-        });
-      }
-    });
+
+    const deleteMessages = () => {
+      message.util.messages.forEach(async msg => {
+        if (isPromise(msg)) msg = await msg;
+        if (msg instanceof Message && msg.channel.type !== 'dm') {
+          msg.delete({
+            reason: 'command cleanup'
+          });
+        }
+      });
+    };
+
+    setTimeout(deleteMessages, command.destruct);
   }
 }
 
