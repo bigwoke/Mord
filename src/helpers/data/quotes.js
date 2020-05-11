@@ -99,7 +99,7 @@ function delQuote (mongo, guild, number) {
  * @param {MongoClient} mongo - Instance of MongoClient with DB connections.
  * @param {Guild} guild - Discord Guild instance.
  * @param {number | User} filter - Filter used to get quote.
- * @returns {AggregationCursor | CommandResult}
+ * @returns {AggregationCursor}
  */
 function getQuote (mongo, guild, filter = null) {
   const query = filter instanceof User
