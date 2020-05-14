@@ -107,7 +107,7 @@ function delQuote (mongo, guild, number) {
  * @param {number | User} filter - Filter used to get quote.
  * @returns {AggregationCursor}
  */
-function getQuote (mongo, guild, filter = null) { // eslint-disable-line max-lines-per-function, max-statements
+function getQuote (mongo, guild, filter = null) {
   const randomize = isNaN(parseInt(filter, 10));
   let filterQuery = {};
 
@@ -121,7 +121,7 @@ function getQuote (mongo, guild, filter = null) { // eslint-disable-line max-lin
   if (!timeouts.has(guild.id)) timeouts.set(guild.id, new Collection());
   const recents = timeouts.get(guild.id);
 
-  return mongo.db(quoteDB).collection(guild.id).estimatedDocumentCount().then(ct => {
+  return this.getQuoteCount(mongo, guild).then(ct => {
     // If the recents set contains all quotes, delete the first several added.
     if (randomize && recents.size === ct) {
       for (const key of recents.firstKey(1)) {
@@ -160,11 +160,17 @@ function getQuote (mongo, guild, filter = null) { // eslint-disable-line max-lin
         return res[0];
       })
       .catch(err => log.error('[DB] Error getting quote: %o', err));
-  }).catch(err => log.error('[DB] Error getting quote count: %o', err));
+  });
+}
+
+function getQuoteCount (mongo, guild) {
+  return mongo.db(quoteDB).collection(guild.id).estimatedDocumentCount()
+    .catch(err => log.error('[DB] Error getting quote count: %o', err));
 }
 
 module.exports = {
   addQuote,
   delQuote,
-  getQuote
+  getQuote,
+  getQuoteCount
 };
