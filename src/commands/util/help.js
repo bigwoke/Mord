@@ -54,7 +54,7 @@ class HelpCommand extends Command {
   commandHelp (message, command) {
     // No usage will be returned if the user doesn't have adequate privileges.
     const usage = Command.buildUsage(command, message);
-    if (!usage) return this.send(message, 'You do not have access to this command.');
+    if (!usage) this.noAccess(message);
 
     // Capitalize the first letter of the category ID
     const categoryName =
@@ -206,6 +206,15 @@ class HelpCommand extends Command {
     for (const cmd of commands) resp += `**${cmd.id}:** ${cmd.description}\n`;
 
     return resp;
+  }
+
+  noAccess (message) {
+    let resp = 'You do not have access to this command.';
+    if (isDM(message)) {
+      resp += 'If you think you have adequate permissions, try using this ' +
+        'command in a guild where you would have those permissions.';
+    }
+    this.send(message, resp);
   }
 }
 
