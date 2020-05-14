@@ -2,6 +2,7 @@ const Command = require('../../types/MordCommand');
 const log = require('../../helpers/log');
 
 class AddQuoteCommand extends Command {
+  // eslint-disable-next-line max-lines-per-function
   constructor () {
     super('addquote', {
       aliases: ['addquote', 'add-quote', 'newquote'],
@@ -15,8 +16,8 @@ class AddQuoteCommand extends Command {
         'also, this command will __not__ prompt you for an author. To use ' +
         'a custom date, include the `--date` flag in the command, followed ' +
         'by a date resolvable string, like "3/21/2023 20:34" or "March 21, ' +
-        '2023, 8:34 PM." Time zones are supported as well. See valid examples ' +
-        'if necessary.',
+        '2023, 8:34 PM." Time zones are supported as well. Dates can be as ' +
+        'specific or vague as you wish. See some valid examples if necessary.',
       destruct: 10000,
       cooldown: 5000,
       examples: [
@@ -25,8 +26,11 @@ class AddQuoteCommand extends Command {
           notes: 'will prompt for quote and use current date'
         },
         {
-          text: 'addquote @Mord funny quote',
+          text: 'addquote Mord funny quote',
           notes: 'will use current date'
+        },
+        {
+          text: 'addquote Mord funny quote --date 3/21/2023'
         },
         {
           text: 'addquote @Mord funny quote --date March 21, 2023, 8:34 PM PST'
