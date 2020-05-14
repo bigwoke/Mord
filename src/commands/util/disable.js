@@ -59,7 +59,7 @@ class DisableCommand extends Command {
     const scope = this.getScope(message, args);
     if (!scope) return;
 
-    if (isProtected(args)) return this.sendResponse(message, args, scope, 'prot');
+    if (isProtected(args.mod)) return this.sendResponse(message, args, scope, 'prot');
 
     // Disable the command if needed, respond accordingly.
     const result = this.runLogic(message, args, scope);
