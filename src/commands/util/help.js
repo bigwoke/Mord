@@ -32,7 +32,7 @@ class HelpCommand extends Command {
           prompt: {
             optional: true,
             breakout: false,
-            retry: 'Could not find a command with that alias, please try again.',
+            retry: 'No commands exist with that alias, what command do you need help with?',
             ended: 'Ending prompts. If you need help, use this command without arguments.'
           }
         }
