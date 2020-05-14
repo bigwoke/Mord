@@ -51,6 +51,10 @@ class Data {
     return quotes.getQuote(await this.db, guild, filter);
   }
 
+  async getQuoteCount (guild) {
+    return quotes.getQuoteCount(await this.db, guild);
+  }
+
   /**
    * Loads default values for settings of all guilds in
    * view of the client, and global settings.
