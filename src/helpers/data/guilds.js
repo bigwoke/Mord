@@ -40,8 +40,13 @@ function setupGuild (client, guild) {
 
   // If the existing guild name does not match, set the guild's name in its record.
   if (guild.name && settings.get(guild.id, 'name') !== guild.name) {
-    log.silly(`[DB] Since last start, guild ${guild.id} changed name from ` +
-      `"${settings.get(guild.id, 'name')}" to "${guild.name}."`);
+    if (settings.get(guild.id, 'name')) {
+      log.silly(`[DB] Since last start, guild ${guild.id} changed name from ` +
+        `"${settings.get(guild.id, 'name')}" to "${guild.name}."`);
+    } else {
+      log.silly(`[DB] Added new guild ${guild.id} since last bot start.`);
+    }
+
     settings.set(guild.id, 'name', guild.name);
   }
 
