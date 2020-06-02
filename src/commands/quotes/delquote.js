@@ -4,7 +4,7 @@ const log = require('../../helpers/log');
 class DelQuoteCommand extends Command {
   constructor () {
     super('delquote', {
-      aliases: ['delquote', 'del-quote', 'deletequote', 'rmquote'],
+      aliases: ['delquote', 'del-quote', 'deletequote', 'rmquote', 'dq'],
       category: 'quotes',
       channel: 'guild',
       description: 'Deletes a quote by number.',

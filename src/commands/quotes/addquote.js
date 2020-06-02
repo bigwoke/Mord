@@ -5,7 +5,7 @@ class AddQuoteCommand extends Command {
   // eslint-disable-next-line max-lines-per-function
   constructor () {
     super('addquote', {
-      aliases: ['addquote', 'add-quote', 'newquote'],
+      aliases: ['addquote', 'add-quote', 'newquote', 'aq'],
       category: 'quotes',
       channel: 'guild',
       description: 'Adds a quote by a given user. Syntax is a bit particular.',
