@@ -47,7 +47,7 @@ function setQuoteIndex (mongo, guild) {
 
 /**
  * Adds a quote to the database for a specific guild.
- * @param {MongoClient} mongo - Instance of MongoClient with DB connections.
+ * @param {MongoClient} mongo - Instance of MongoClient with DB connection.
  * @param {Guild} guild - Discord Guild instance.
  * @param {Object} document - Quote document to insert into database.
  * @returns {CommandResult}
@@ -77,7 +77,7 @@ function addQuote (mongo, guild, document) {
 
 /**
  * Deletes a specific quote from the database by number.
- * @param {MongoClient} mongo - Instance of MongoClient with DB connections.
+ * @param {MongoClient} mongo - Instance of MongoClient with DB connection.
  * @param {Guild} guild - Discord Guild instance.
  * @param {number} number - Quote number to delete.
  * @returns {CommandResult}
@@ -101,8 +101,55 @@ function delQuote (mongo, guild, number) {
 }
 
 /**
+ * Gets quote count of an entire collection by default, or counts quotes by
+ * a specific user if one is provided in the form of a discord User instance.
+ * @param {MongoClient} mongo - Instance of MongoClient with DB connection.
+ * @param {Guild} guild - Discord Guild instance.
+ * @param {User} author - Quote author as a User instance.
+ * @returns {Promise<number>}
+ */
+function getQuoteCount (mongo, guild, author = null) {
+  const query = author instanceof User
+    ? { 'author.id': author.id }
+    : {};
+  const options = { maxTimeMS: 250 };
+
+  return mongo.db(quoteDB).collection(guild.id).countDocuments(query, options)
+    .catch(err => log.error('[DB] Error getting quote `count`: %o', err));
+}
+
+/**
+ * Checks if the amount of quotes timed out recently matches or exceeds
+ * the amount of total quotes in the given parameter, and if so will
+ * remove the earliest quote added to the timeouts collection.
+ * @param {Guild} guild - Discord Guild instance.
+ * @param {number} count - Amount of quotes in a (?queried) collection.
+ * @param {string} filter - Filter used to retrieve quote.
+ * @returns {boolean}
+ */
+function manageTimeoutCount (guild, count, filter) {
+  const recents = timeouts.get(guild.id);
+
+  if (filter instanceof User) {
+    const recentVals = recents.array();
+    const timeoutsMatchingUser = recentVals.filter(v => v.author.id === filter.id);
+
+    // If timeouts matching the user >= # of quotes by said user, del the first.
+    if (timeoutsMatchingUser.length >= count) {
+      for (const to of recents) {
+        const [key, val] = to;
+        if (val.author.id === filter.id) return recents.delete(key);
+      }
+    }
+  } else if (recents.size >= count) {
+      // If amount of recent timeouts exceeds number of quotes, delete the first.
+      return recents.delete(recents.firstKey(1)[0]);
+  }
+}
+
+/**
  * Gets a quote using the provided filter (random otherwise).
- * @param {MongoClient} mongo - Instance of MongoClient with DB connections.
+ * @param {MongoClient} mongo - Instance of MongoClient with DB connection.
  * @param {Guild} guild - Discord Guild instance.
  * @param {number | User} filter - Filter used to get quote.
  * @returns {AggregationCursor}
@@ -111,6 +158,10 @@ function getQuote (mongo, guild, filter = null) {
   const randomize = isNaN(parseInt(filter, 10));
   let filterQuery = {};
 
+  /*
+   * If a quote is requested by number, filter for that number.
+   * Else if request is for a User, filter by that user's ID.
+   */
   if (typeof filter === 'number') {
     filterQuery = { number: filter };
   } else if (filter instanceof User) {
@@ -121,14 +172,8 @@ function getQuote (mongo, guild, filter = null) {
   if (!timeouts.has(guild.id)) timeouts.set(guild.id, new Collection());
   const recents = timeouts.get(guild.id);
 
-  return this.getQuoteCount(mongo, guild).then(ct => {
-    // If the recents set contains all quotes, delete the first several added.
-    if (randomize && recents.size === ct) {
-      for (const key of recents.firstKey(1)) {
-        clearTimeout(recents.get(key));
-        recents.delete(key);
-      }
-    }
+  return getQuoteCount(mongo, guild, filter).then(ct => {
+    if (randomize) manageTimeoutCount(guild, ct, filter);
 
     // Set the recentQuery filter query to use timed out numbers if necessary
     const recentQuery = randomize
@@ -153,8 +198,12 @@ function getQuote (mongo, guild, filter = null) {
         if (randomize && res[0]) {
           const quoteNumber = res[0].number;
           const timeoutFunc = () => recents.delete(quoteNumber);
+          const timeoutObject = {
+            author: res[0].author,
+            timeout: setTimeout(timeoutFunc, ct * 5000)
+          };
 
-          recents.set(quoteNumber, setTimeout(timeoutFunc, ct * 5000));
+          recents.set(quoteNumber, timeoutObject);
         }
 
         return res[0];
@@ -163,10 +212,6 @@ function getQuote (mongo, guild, filter = null) {
   });
 }
 
-function getQuoteCount (mongo, guild) {
-  return mongo.db(quoteDB).collection(guild.id).estimatedDocumentCount()
-    .catch(err => log.error('[DB] Error getting quote count: %o', err));
-}
 
 module.exports = {
   addQuote,
