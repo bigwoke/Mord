@@ -101,6 +101,7 @@ class HelpCommand extends Command {
 
   appendConditionals (command) {
     let resp =
+      `${command.channel ? '**Channel Restriction:**' : ''} ${command.channel}\n` +
       `${command.protected ? '**Protected:** Yes\n' : ''}` +
       `${command.ownerOnly ? '**Owner Only:** Yes\n' : ''}`;
 
