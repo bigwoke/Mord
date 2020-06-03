@@ -13,6 +13,9 @@ const config = {
     url: process.env.DB_URL,
     name: process.env.DB_NAME || 'Mord',
     opts: { useNewUrlParser: true, useUnifiedTopology: true }
+  },
+  keys: {
+    googlekg: process.env.KEY_GOOGLEKG
   }
 };
 
