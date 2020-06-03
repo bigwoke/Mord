@@ -1,3 +1,4 @@
+const { Argument } = require('discord-akairo');
 const Command = require('../../types/MordCommand');
 const log = require('../../helpers/log');
 
@@ -25,7 +26,11 @@ class AddQuoteCommand extends Command {
       args: [
         {
           id: 'author',
-          type: 'user',
+          type: async (m, p) => {
+            const { resolver } = this.handler;
+            const member = await Argument.cast('member', resolver, m, p);
+            return member.user || null;
+          },
           description: 'Guild member who authored the quote.',
           unordered: true,
           prompt: {
