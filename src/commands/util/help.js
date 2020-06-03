@@ -51,6 +51,12 @@ class HelpCommand extends Command {
     message.author.send(resp);
   }
 
+  /**
+   * Builds help for a specified command.
+   * @param {Message} message - Message prompting command execution.
+   * @param {Command} command - Command to generate help for.
+   * @returns {string}
+   */
   commandHelp (message, command) {
     // No usage will be returned if the user doesn't have adequate privileges.
     const usage = Command.buildUsage(command, message);
@@ -75,6 +81,12 @@ class HelpCommand extends Command {
     return resp;
   }
 
+  /**
+   * Appends arguments for a given command.
+   * @param {Message} message - Message prompting command execution.
+   * @param {Command} command - Command to generate help for.
+   * @returns {string}
+   */
   appendArguments (message, command) {
     const isOwner = this.client.isOwner(message.author);
 
@@ -99,11 +111,18 @@ class HelpCommand extends Command {
     return resp.includes('`') ? resp : '';
   }
 
+  /**
+   * Appends conditionally displayed command attributes.
+   * @param {Command} command - Command to generate help for.
+   * @returns {string}
+   */
+  /* eslint-disable-next-line max-statements */
   appendConditionals (command) {
     let resp =
-      `${command.channel ? '**Channel Restriction:**' : ''} ${command.channel}\n` +
       `${command.protected ? '**Protected:** Yes\n' : ''}` +
       `${command.ownerOnly ? '**Owner Only:** Yes\n' : ''}`;
+
+    if (command.channel) resp += `**Channel Restriction:** ${command.channel}`;
 
     if (command.userPermissions) {
       let rawPerms = Array.isArray(command.userPermissions)
@@ -126,6 +145,12 @@ class HelpCommand extends Command {
     return resp;
   }
 
+  /**
+   * Appends examples for the given command.
+   * @param {Message} message - Message prompting command execution.
+   * @param {Command} command - Command to generate help for.
+   * @returns {string}
+   */
   appendExamples (message, command) {
     const isOwner = this.client.isOwner(message.author);
 
@@ -146,7 +171,11 @@ class HelpCommand extends Command {
     return resp.includes('`') ? resp : '';
   }
 
-
+  /**
+   * Prints general help if no command is specified.
+   * @param {Message} message - Message prompting command execution.
+   * @returns {string}
+   */
   generalHelp (message) {
     const guildName = message.guild ? `"${message.guild.name}"` : 'DM';
     const guildID = message.guild ? message.guild.id : 'global';
@@ -179,6 +208,12 @@ class HelpCommand extends Command {
     return resp;
   }
 
+  /**
+   * Appends commands in a given category.
+   * @param {Message} message - Message prompting command execution.
+   * @param {Category} category - Category of modules.
+   * @returns {string}
+   */
   appendCategory (message, category) {
     const { type } = message.channel;
     const categoryName =
@@ -209,6 +244,10 @@ class HelpCommand extends Command {
     return resp;
   }
 
+  /**
+   * Displays messaging indicating lack of appropriate permissions.
+   * @param {Message} message - Message prompting commmand execution.
+   */
   noAccess (message) {
     let resp = 'You do not have access to this command.';
     if (isDM(message)) {
