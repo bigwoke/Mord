@@ -51,6 +51,10 @@ class Data {
     return quotes.getQuote(await this.db, guild, filter);
   }
 
+  /**
+   * Gets total count of quotes in a guild.
+   * @param {Guild} guild - Discord Guild instance.
+   */
   async getQuoteCount (guild) {
     return quotes.getQuoteCount(await this.db, guild);
   }
