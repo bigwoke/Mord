@@ -10,7 +10,10 @@ class UrbanCommand extends Command {
       aliases: ['urban', 'urbandict', 'urban-dict'],
       category: 'lookup',
       description: 'Gets a word\'s top definitions from Urban Dictionary.',
-      details: '',
+      details: 'Searches for the given term or phrase using the Urban ' +
+        'Dictionary API, and returns the top three results. Each term ' +
+        'definition has a character limit of 2000, at which point the ' +
+        'term\'s definition will be truncated.',
       args: [
         {
           id: 'term',
