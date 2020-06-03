@@ -1,5 +1,6 @@
 const Command = require('../../types/MordCommand');
 const log = require('../../helpers/log');
+const { isDM } = require('../../helpers/tools');
 const https = require('https');
 const { MessageEmbed } = require('discord.js');
 
@@ -36,7 +37,18 @@ class UrbanCommand extends Command {
   }
 
   exec (message, args) {
-    this.makeRequest(args).then(response => {
+    function appendField (embed, ct, response) {
+      const title = `Definition ${ct + 1}, ${response[ct].thumbs_up} upvotes:`;
+      const definition = response[ct].definition
+        .replace(/[[\]]/gu, '')
+        .replace(/\n+/gu, ' ')
+        .slice(0, 2000);
+
+      embed.addField(title, definition);
+    }
+
+    return this.makeRequest(args).then(response => {
+      if (!response || response.length === 0) return this.emptyResponse(message);
       const entries = response.length >= 3 ? 3 : response.length;
       const urbanDict = 'https://www.urbandictionary.com/define.php?term=';
       const embed = new MessageEmbed();
@@ -46,13 +58,7 @@ class UrbanCommand extends Command {
       embed.setURL(`${urbanDict}${args.term.replace(' ', '+')}`);
 
       for (let ct = 0; ct < entries; ct++) {
-        const title = `Definition ${ct + 1}, ${response[ct].thumbs_up} upvotes:`;
-        const definition = response[ct].definition
-          .replace(/[[\]]/gu, '')
-          .replace(/\n+/gu, ' ')
-          .slice(0, 2000);
-
-        embed.addField(title, definition);
+        appendField(embed, ct, response);
       }
 
       this.send(message, '', { embed: embed });
@@ -84,6 +90,19 @@ class UrbanCommand extends Command {
       });
 
       request.on('error', reject);
+    });
+  }
+
+  /**
+   * Handles an empty response from a REST request.
+   * @param {Message} message - Message prompting command execution.
+   */
+  emptyResponse (message) {
+    message.channel.send('That term returned zero results.').then(m => {
+      if (!isDM(m)) {
+        message.delete({ timeout: 3000, reason: 'command cleanup' });
+        m.delete({ timeout: 3000, reason: 'command cleanup' });
+      }
     });
   }
 }
