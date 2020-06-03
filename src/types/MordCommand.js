@@ -54,7 +54,7 @@ class MordCommand extends Command {
    * @param {Message} message - Message object to provide context.
    * @param {StringResolvable|Object} content - Content to send as a message.
    * @param {MessageOptions|MessageAdditions} [options={}] - Options to apply to content.
-   * @param {boolean} [isReply=false]  - Whether this message is a reply to a user.
+   * @param {boolean} [isReply=false] - Whether this message is a reply to a user.
    * @returns {Promise<Message>} Sent message(s).
    */
   send (message, content, options = {}, isReply = false) {
