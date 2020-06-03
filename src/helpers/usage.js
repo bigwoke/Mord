@@ -15,7 +15,7 @@ function appendArgumentUsage (arg, isOwner, userPerms) {
   // If argument has permission requirement, and user doesn't have them, skip.
   else if (arg.userPermissions && !userPerms.has(arg.userPermissions)) return '';
   // If argument seems required, add required arg to usage string.
-  else if (!arg.match && arg.prompt && !arg.prompt.optional) return ` <${arg.id}>`;
+  else if (arg.prompt && !arg.prompt.optional) return ` <${arg.id}>`;
   // If argument has an otherwise property, it's required. Add to usage string.
   else if (arg.otherwise) return ` <${arg.id}>`;
   // If argument seems optional, add optional arg to usage string.
