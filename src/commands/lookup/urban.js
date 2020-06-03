@@ -65,7 +65,7 @@ class UrbanCommand extends Command {
       }
 
       this.send(message, '', { embed: embed });
-    }).catch(log.error);
+    }).catch(err => log.error('%o', err));
   }
 
   /**
