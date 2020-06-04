@@ -139,7 +139,7 @@ class HelpCommand extends Command {
 
       perms = perms.join(' ');
 
-      resp += `**Permissions:** ${perms}\n`;
+      resp += `**Permissions Required:** ${perms}\n`;
     }
 
     return resp;
