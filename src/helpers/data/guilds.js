@@ -54,6 +54,25 @@ function setupGuild (client, guild) {
 }
 
 /**
+ * Refreshes guild settings that will not otherwise be refreshed or
+ * set "naturally" through other uses of the bot (like guild names).
+ * This happens every hour.
+ * @param {AkairoClient} client - Akairo bot client instance.
+ */
+function setRefreshInterval (client) {
+  setInterval(() => {
+    for (const guild of client.guilds.cache.values()) {
+      const storedName = client.settings.get(guild.id, 'name');
+      if (storedName && storedName !== guild.name) {
+        log.debug(`[DB] Guild ${guild.id} recently changed name ` +
+          `from "${storedName}" to "${guild.name}."`);
+        client.settings.set(guild.id, 'name', guild.name);
+      }
+    }
+  }, 3600000);
+}
+
+/**
  * Loads default values for settings of all guilds in view
  * of the client, and global settings.
  * @param {AkairoClient} client - Akairo bot client instance.
@@ -63,6 +82,7 @@ function setupCurrentGuilds (client) {
   const guildsCache = client.guilds.cache;
   for (const guild of guildsCache.values()) setupGuild(client, guild);
   log.verbose('[DB] Guild data setup is complete!');
+  setRefreshInterval(client);
 }
 
 module.exports = {
