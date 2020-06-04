@@ -1,4 +1,5 @@
 const Command = require('../../types/MordCommand');
+const { Argument } = require('discord-akairo');
 const { isDM } = require('../../helpers/tools');
 
 class BlacklistCommand extends Command {
@@ -17,7 +18,7 @@ class BlacklistCommand extends Command {
       args: [
         {
           id: 'action',
-          type: BlacklistCommand.determineType,
+          type: BlacklistCommand.determineActionType,
           description: 'Whether to add or remove a user.',
           unordered: true,
           prompt: {
@@ -27,12 +28,12 @@ class BlacklistCommand extends Command {
         },
         {
           id: 'user',
-          type: 'member',
+          type: BlacklistCommand.determineUserType,
           description: 'User to add or remove from whitelist.',
           unordered: true,
           prompt: {
             start: 'Who do you want to add/remove?',
-            retry: 'Could not find a guild member. Try again.'
+            retry: 'Could not find that user. Try again.'
           }
         },
         {
@@ -64,7 +65,6 @@ class BlacklistCommand extends Command {
   }
 
   exec (message, args) {
-    args.user = args.user.user;
     const scope = this.getScope(message, args);
     if (!scope) return;
 
@@ -138,14 +138,30 @@ class BlacklistCommand extends Command {
   }
 
   /**
-   * Determine action to take on the given user, add or remove.
-   * @param {Message} message - Prompting message used for context.
-   * @param {string} phrase - Argument text content.
+   * Determine action to take on user in question.
+   * @param {Message} m - Prompting message used for context.
+   * @param {string} p - Argument text content.
    * @returns {string|null}
    */
-  static determineType (message, phrase) {
-    phrase = phrase.toLowerCase();
-    return ['add', 'remove'].includes(phrase) ? phrase : null;
+  static determineActionType (m, p) {
+    p = p.toLowerCase();
+    return ['add', 'remove'].includes(p) ? p : null;
+  }
+
+  /**
+   * Determine user type based on environment.
+   * @param {Message} m - Prompting message used for context.
+   * @param {string} p - Argument text content.
+   * @returns {string|null}
+   */
+  static async determineUserType (m, p) {
+    const { resolver } = this.handler;
+    if (m.channel.type === 'dm') {
+      const user = await Argument.cast('user', resolver, m, p);
+      return user || null;
+    }
+    const member = await Argument.cast('member', resolver, m, p);
+    return member.user || null;
   }
 }
 
