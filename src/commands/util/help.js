@@ -48,7 +48,7 @@ class HelpCommand extends Command {
 
     // Only send a short message in a text channel to prevent spam.
     if (!isDM(message)) this.send(message, 'Check your DMs for a help message.');
-    if (resp) message.author.send(resp);
+    if (resp) message.author.send(`${resp}\u200b`);
   }
 
   /**
