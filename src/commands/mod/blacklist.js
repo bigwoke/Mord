@@ -13,7 +13,7 @@ class BlacklistCommand extends Command {
         'similar functions.',
       destruct: 8000,
       ratelimit: 2,
-      userPermissins: 'KICK_MEMBERS',
+      userPermissions: 'KICK_MEMBERS',
       args: [
         {
           id: 'action',
