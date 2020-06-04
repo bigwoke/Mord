@@ -125,20 +125,7 @@ class HelpCommand extends Command {
     if (command.channel) resp += `**Channel Restriction:** ${command.channel}`;
 
     if (command.userPermissions) {
-      let rawPerms = Array.isArray(command.userPermissions)
-        ? command.userPermissions.join(', ')
-        : command.userPermissions;
-
-      // Set all characters to lowercase, split by space & underscore.
-      rawPerms = rawPerms.toLowerCase().split(/[\s_]/gu);
-
-      let perms = [];
-      for (const word of rawPerms) {
-        perms.push(`${word[0].toUpperCase()}${word.slice(1)}`);
-      }
-
-      perms = perms.join(' ');
-
+      const perms = this.processPermissions(command);
       resp += `**Permissions Required:** ${perms}\n`;
     }
 
@@ -196,7 +183,8 @@ class HelpCommand extends Command {
       `\`@${at} <command>\`. For example, \`${pf}prefix\` or \`@${at} prefix\`.\n` +
       'In DMs, a prefix is not necessary. Commands can always be run using ' +
       `\`@${at}\` as a prefix, regardless of guild or DM.\n\n` +
-      'Use `help <command>` for details on any specific command.\n' +
+      'Use `help <command>` for details on any specific command. Permissions ' +
+      'required to run a command (if applicable) are shown after the description.\n' +
       'In command usage, angle brackets `<>` indicate variables. Those in ' +
       'brackets `[]` are optional. Non-variable text must be used as-is.\n\n' +
       `__**Commands *available to you* in ${guildName}:**__\n`;
@@ -239,7 +227,8 @@ class HelpCommand extends Command {
     if (commands.length === 0) return '';
 
     let resp = `\n__${categoryName}__\n`;
-    for (const cmd of commands) resp += `**${cmd.id}:** ${cmd.description}\n`;
+    for (const cmd of commands) resp += `**${cmd.id}:** ${cmd.description}` +
+      `${cmd.userPermissions ? ` *(${this.processPermissions(cmd)})*` : ''}\n`;
 
     return resp;
   }
@@ -255,6 +244,27 @@ class HelpCommand extends Command {
         'command in a guild where you would have those permissions.';
     }
     this.send(message, resp);
+  }
+
+  /**
+   * Processes raw permission strings into more readable versions.
+   * @param {Command} command - Command to process permissions for.
+   * @returns {string}
+   */
+  processPermissions (command) {
+    let rawPerms = Array.isArray(command.userPermissions)
+      ? command.userPermissions.join(', ')
+      : command.userPermissions;
+
+    // Set all characters to lowercase, split by space & underscore.
+    rawPerms = rawPerms.toLowerCase().split(/[\s_]/gu);
+
+    const perms = [];
+    for (const word of rawPerms) {
+      perms.push(`${word[0].toUpperCase()}${word.slice(1)}`);
+    }
+
+    return perms.join(' ');
   }
 }
 
