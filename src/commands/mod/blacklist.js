@@ -94,8 +94,8 @@ class BlacklistCommand extends Command {
     blacklist.push(args.user);
     settings.set(scope, 'blacklist', blacklist);
 
-    return this.send(message, `${args.user.tag} added to 
-      \`${scope === 'global' ? 'global' : message.guild.name}\` blacklist.`);
+    return this.send(message, `${args.user.tag} added to ` +
+      `\`${scope === 'global' ? 'global' : message.guild.name}\` blacklist.`);
   }
 
   /**
@@ -118,8 +118,8 @@ class BlacklistCommand extends Command {
     blacklist = blacklist.filter(u => u.id !== args.user.id);
     settings.set(scope, 'blacklist', blacklist);
 
-    return this.send(message, `${args.user.tag} removed from
-      ${scope === 'global' ? 'global' : message.guild.name} blacklist.`);
+    return this.send(message, `${args.user.tag} removed from ` +
+      `${scope === 'global' ? 'global' : message.guild.name} blacklist.`);
   }
 
   /**
