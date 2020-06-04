@@ -94,7 +94,7 @@ class AddQuoteCommand extends Command {
         this.send(message, 'There was an issue saving that quote.');
       }
     }).catch(err => {
-      this.send(message, 'Error *after* adding quote, let the bot owner know.');
+      this.send(message, 'Error adding quote, let the bot owner know.');
       log.error(err);
     });
   }
