@@ -1,6 +1,6 @@
-const Command = require('../../types/MordCommand.js');
-const cfg = require('../../../config.js');
-const { isDM } = require('../../helpers/Tools.js');
+const Command = require('../../types/MordCommand');
+const cfg = require('../../../config');
+const { isDM } = require('../../helpers/tools');
 
 class PrefixCommand extends Command {
   constructor () {
