@@ -29,9 +29,9 @@ class QuoteCommand extends Command {
           id: 'filter',
           type: async (message, phrase) => {
             const { resolver } = this.handler;
-            const user = await Argument.cast('user', resolver, message, phrase);
             const num = await Argument.cast('number', resolver, message, phrase);
-            return user || num || null;
+            const user = await Argument.cast('user', resolver, message, phrase);
+            return num || user || null;
           },
           description: 'Number or user to retrieve a quote with.'
         }
