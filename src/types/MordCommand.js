@@ -1,4 +1,5 @@
 const { Command } = require('discord-akairo');
+const log = require('../helpers/log');
 const buildUsageString = require('../helpers/usage');
 
 /**
@@ -60,10 +61,10 @@ class MordCommand extends Command {
   send (message, content, options = {}, isReply = false) {
     if (!this.handler.commandUtil) throw new Error('CommandUtil is disabled.');
     const resp = isReply
-      ? message.util.reply(content, options)
-      : message.util.send(content, options);
+      ? message.util.reply(content, options).catch(e => log.error('%o', e))
+      : message.util.send(content, options).catch(e => log.error('%o', e));
 
-    message.util.addMessage(resp);
+    message.util.addMessage(resp).catch(e => log.error('%o', e));
     return resp;
   }
 
