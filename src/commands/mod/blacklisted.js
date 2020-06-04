@@ -49,7 +49,7 @@ class BlacklistedCommand extends Command {
     const resp = this.buildResponse(blacklist, environment);
 
     if (!isDM(message)) this.send(message, 'Check your DMs for a list of blacklisted users.');
-    message.author.send(resp);
+    message.author.send(`${resp}\n\u200b`);
   }
 
   /**
