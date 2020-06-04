@@ -11,7 +11,11 @@ class DebugListener extends Listener {
   }
 
   exec (message) {
-    log.debug(message);
+    if (message.startsWith('[WS => Shard 0]') && message.includes('Heartbeat')) {
+      log.silly(message);
+    } else {
+      log.debug(message);
+    }
   }
 }
 
