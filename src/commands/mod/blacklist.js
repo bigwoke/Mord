@@ -161,7 +161,7 @@ class BlacklistCommand extends Command {
       return user || null;
     }
     const member = await Argument.cast('member', resolver, m, p);
-    return member.user || null;
+    return member ? member.user : null;
   }
 }
 
