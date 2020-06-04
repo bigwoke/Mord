@@ -26,11 +26,7 @@ class AddQuoteCommand extends Command {
       args: [
         {
           id: 'author',
-          type: async (m, p) => {
-            const { resolver } = this.handler;
-            const member = await Argument.cast('member', resolver, m, p);
-            return member.user || null;
-          },
+          type: 'member',
           description: 'Guild member who authored the quote.',
           unordered: true,
           prompt: {
@@ -82,6 +78,7 @@ class AddQuoteCommand extends Command {
   }
 
   exec (message, args) {
+    args.author = args.author.user;
     const document = {
       quote: args.quote.trim(),
       date: args.date,
