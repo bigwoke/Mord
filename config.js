@@ -1,19 +1,22 @@
 /* eslint-disable no-process-env */
 const config = {
-  loglevel: {
-    console: 'silly',
-    file: 'debug'
+  client: {
+    token: process.env.TOKEN,
+    prefix: process.env.PREFIX || '!',
+    ownerID: process.env.OWNERID || ''
+  },
+  logging: {
+    console: process.env.LOG_CONSOLE || 'info',
+    file: process.env.LOG_FILE
   },
   db: {
     url: process.env.DB_URL,
-    opts: { useNewUrlParser: true }
+    name: process.env.DB_NAME || 'Mord',
+    opts: { useNewUrlParser: true, useUnifiedTopology: true }
   },
-  modules: {
-    quotes: process.env.QUOTES === 'true'
-  },
-  token: process.env.TOKEN,
-  googleapi: process.env.GOOGLE_API_KEY,
-  prefix: process.env.PREFIX || '!'
-}
+  keys: {
+    googlekg: process.env.KEY_GOOGLEKG
+  }
+};
 
-module.exports = config
+module.exports = config;

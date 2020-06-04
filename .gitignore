@@ -1,4 +1,6 @@
 .env
+.eslintrc.*
 **.log
 node_modules
 \.vscode/
+.eslintrc.*
