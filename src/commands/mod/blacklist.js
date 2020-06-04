@@ -3,7 +3,6 @@ const { Argument } = require('discord-akairo');
 const { isDM } = require('../../helpers/tools');
 
 class BlacklistCommand extends Command {
-  /* eslint-disable-next-line max-lines-per-function */
   constructor () {
     super('blacklist', {
       aliases: ['blacklist', 'block'],
@@ -11,39 +10,11 @@ class BlacklistCommand extends Command {
       description: 'Adds or removes a user from the blacklist.',
       details: 'Blacklisted users will not be able to use the bot in any ' +
         'capacity, though they can still be included in quotes or other ' +
-        'similar functions.',
+        'similar functions. Valid actions to take when running this ' +
+        'command are `add`, `remove`, or `clear`.',
       destruct: 8000,
       ratelimit: 2,
       userPermissions: 'KICK_MEMBERS',
-      args: [
-        {
-          id: 'action',
-          type: BlacklistCommand.determineActionType,
-          description: 'Whether to add or remove a user.',
-          unordered: true,
-          prompt: {
-            start: 'Do you want to `add` or `remove` a user?',
-            retry: 'That isn\'t an option, try again.'
-          }
-        },
-        {
-          id: 'user',
-          type: BlacklistCommand.determineUserType,
-          description: 'User to add or remove from whitelist.',
-          unordered: true,
-          prompt: {
-            start: 'Who do you want to add/remove?',
-            retry: 'Could not find that user. Try again.'
-          }
-        },
-        {
-          id: 'global',
-          match: 'flag',
-          flag: '--global',
-          description: 'Whether the action should be applied globally.',
-          ownerOnly: true
-        }
-      ],
       examples: [
         {
           text: 'blacklist',
@@ -57,6 +28,10 @@ class BlacklistCommand extends Command {
           text: 'blacklist remove @Mord'
         },
         {
+          text: 'blacklist clear',
+          notes: 'wipes the blacklist, fresh starts!'
+        },
+        {
           text: 'blacklist add @Mord --global',
           ownerOnly: true
         }
@@ -64,12 +39,51 @@ class BlacklistCommand extends Command {
     });
   }
 
+  *args () {
+    const action = yield {
+      type: BlacklistCommand.determineActionType,
+      description: 'Whether to add or remove a user.',
+      unordered: true,
+      prompt: {
+        start: 'Do you want to `add` or `remove` a user?',
+        retry: 'That isn\'t an option, try again.'
+      }
+    };
+
+    const user = action === 'clear'
+      ? null
+      : yield {
+          type: BlacklistCommand.determineUserType,
+          description: 'User to add or remove from whitelist.',
+          unordered: true,
+          prompt: {
+            start: 'Who do you want to add/remove?',
+            retry: 'Could not find that user. Try again.'
+          }
+        };
+
+    const global = yield {
+      id: 'global',
+      match: 'flag',
+      flag: '--global',
+      description: 'Whether the action should be applied globally.',
+      ownerOnly: true
+    };
+
+    return { action, user, global };
+  }
+
   exec (message, args) {
     const scope = this.getScope(message, args);
     if (!scope) return;
 
-    if (args.action === 'add') this.addToBlacklist(message, args, scope);
-    else this.removeFromBlacklist(message, args, scope);
+    if (args.action === 'add') {
+      this.addToBlacklist(message, args, scope);
+    } else if (args.action === 'remove') {
+      this.removeFromBlacklist(message, args, scope);
+    } else if (args.action === 'clear') {
+      this.clearBlacklist(message, args, scope);
+    }
   }
 
   /**
@@ -122,6 +136,12 @@ class BlacklistCommand extends Command {
       `${scope === 'global' ? 'global' : message.guild.name} blacklist.`);
   }
 
+  clearBlacklist (message, args, scope) {
+    this.client.settings.set(scope, 'blacklist', []);
+    return this.send(message, 'All users cleared from ' +
+      `${scope === 'global' ? 'global' : message.guild.name} blacklist.`);
+  }
+
   /**
    * Get the scope of the disable action, either global or guild.
    * @param {Message} message - Prompting message used for context.
@@ -145,7 +165,7 @@ class BlacklistCommand extends Command {
    */
   static determineActionType (m, p) {
     p = p.toLowerCase();
-    return ['add', 'remove'].includes(p) ? p : null;
+    return ['add', 'remove', 'clear'].includes(p) ? p : null;
   }
 
   /**
