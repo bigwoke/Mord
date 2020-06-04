@@ -42,7 +42,7 @@ class QuoteCommand extends Command {
   exec (message, args) {
     this.client.data.getQuote(message.guild, args.filter).then(quote => {
       if (!quote && !args.filter) return this.send(message, 'None exist, add some!');
-      else if (!quote) this.send(message, 'Could not find a matching quote.');
+      else if (!quote) return this.send(message, 'Could not find a matching quote.');
 
       const embed = this.buildEmbed(message, quote);
       this.send(message, null, { embed: embed });
