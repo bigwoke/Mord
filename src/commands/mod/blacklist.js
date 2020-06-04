@@ -14,7 +14,7 @@ class BlacklistCommand extends Command {
         'command are `add`, `remove`, or `clear`.',
       destruct: 8000,
       ratelimit: 2,
-      userPermissions: 'KICK_MEMBERS',
+      userPermissions: 'BAN_MEMBERS',
       examples: [
         {
           text: 'blacklist',
