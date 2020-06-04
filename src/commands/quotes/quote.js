@@ -44,23 +44,44 @@ class QuoteCommand extends Command {
       if (!quote && !args.filter) return this.send(message, 'None exist, add some!');
       else if (!quote) this.send(message, 'Could not find a matching quote.');
 
-      // Prepare date and author for display
-      const date = quote.date.toLocaleString('en-US', this.dateOpts(quote.date));
-      const author = message.guild.members.resolve(quote.author.id) || quote.author;
-
-      const embed = new MessageEmbed();
-      embed.setColor(author.displayColor);
-      embed.setAuthor(
-        author.displayName || author.username,
-        author.user.displayAvatarURL()
-        );
-      embed.setDescription(`"${quote.quote}"`);
-      embed.setFooter(`#${quote.number} - ${date}`);
-
+      const embed = this.buildEmbed(message, quote);
       this.send(message, null, { embed: embed });
     });
   }
 
+  /**
+   * Formats a given quote into an embed for display.
+   * @param {Message} message - Message prompting command execution.
+   * @param {Object} quote - Quote to display as embed.
+   * @returns {MessageEmbed}
+   */
+  buildEmbed (message, quote) {
+    // Prepare date author, submitter for display
+    const date = quote.date.toLocaleString('en-US', this.dateOpts(quote.date));
+    const author = message.guild.members.resolve(quote.author.id) || quote.author;
+    const submitter = message.guild.members.resolve(quote.submitter.id) || quote.submitter;
+    const avatarURL = author.user
+      ? author.user.displayAvatarURL()
+      : `https://cdn.discordapp.com/embed/avatars/${author.discriminator % 5}.png`;
+
+    const embed = new MessageEmbed();
+    embed.setColor(author.displayColor);
+    embed.setAuthor(
+      author.displayName || author.username,
+      avatarURL
+      );
+    embed.setDescription(`"${quote.quote}"`);
+    embed.setFooter(`#${quote.number} - ${date} - Added by ` +
+      `${submitter.displayName || submitter.username}`);
+
+    return embed;
+  }
+
+  /**
+   * Formats date string options based on precision.
+   * @param {Date} date - Date the quote was authored.
+   * @returns {Object}
+   */
   dateOpts (date) { // eslint-disable-line max-statements
     // If a date does not have second or ms precision, consider it vague.
     const vague = !date.getSeconds() && !date.getMilliseconds();
