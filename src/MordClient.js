@@ -76,7 +76,7 @@ class MordClient extends AkairoClient {
       this.configureHandlers();
       this.addArgumentTypes();
     });
-    this.on('ready', () => this.data.setupCurrentGuilds());
+    this.on('ready', () => this.readySetup());
   }
 
   /**
@@ -122,6 +122,14 @@ class MordClient extends AkairoClient {
       if (!phrase) return null;
       return this.commandHandler.categories.get(phrase.toLowerCase());
     });
+  }
+
+  /**
+   * Runs setup functions when client is marked ready.
+   */
+  readySetup () {
+    this.data.setupCurrentGuilds();
+    this.user.setActivity(`@${this.user.username} help`, { type: 'LISTENING' });
   }
 }
 
