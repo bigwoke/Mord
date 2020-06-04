@@ -22,7 +22,7 @@ function advanceSequence (mongo, guild) {
   };
   const opts = { returnOriginal: false, upsert: true };
 
-  return mongo.db(cfg.db.name).collection('counters')
+  return mongo.db(cfg.db.name).collection('settings')
     .findOneAndUpdate(query, update, opts)
     .then(res => {
       log.debug(`[DB] Advanced quote sequence for "${guild.name}" (${guild.id})`);
