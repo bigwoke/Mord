@@ -177,8 +177,8 @@ class HelpCommand extends Command {
 
     let resp = 'Mord is a modular, per-guild configurable Discord chat bot ' +
       'created by DJ#8074 on Discord, or bigwoke on Github. The bot is ' +
-      'written in JavaScript using Node.JS with discord.js and MongoDB.' +
-      'The source can be found at https://github.com/bigwoke/Mord \n\n';
+      'written in JavaScript using Node.JS with discord.js and MongoDB. ' +
+      'The source can be found at <https://github.com/bigwoke/Mord>\n\n';
 
     resp += `To run commands in ${guildName}, use \`${pf}<command>\` or ` +
       `\`@${at} <command>\`. For example, \`${pf}prefix\` or \`@${at} prefix\`.\n` +
