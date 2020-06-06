@@ -1,6 +1,13 @@
 const winston = require('winston');
 const cfg = require('../../config');
 
+const fileFormat = info => {
+  const now = new Date().toISOString();
+  const { level, message } = info;
+
+  return `${now} - ${level.padEnd(7)}: ${message}`;
+};
+
 // Create default logger at info level using splat formatter
 const log = winston.createLogger({
   level: 'info',
@@ -19,12 +26,7 @@ if (cfg.logging.file) {
   log.add(new winston.transports.File({
     level: cfg.logging.file,
     filename: './output.log',
-    // Combine simple + timestamp + errors w/ stack
-    format: winston.format.combine(
-      winston.format.simple(),
-      winston.format.timestamp(),
-      winston.format.errors({ stack: true })
-    )
+    format: winston.format.printf(fileFormat)
   }));
 }
 
