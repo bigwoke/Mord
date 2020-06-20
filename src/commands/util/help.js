@@ -122,7 +122,7 @@ class HelpCommand extends Command {
       `${command.protected ? '**Protected:** Yes\n' : ''}` +
       `${command.ownerOnly ? '**Owner Only:** Yes\n' : ''}`;
 
-    if (command.channel) resp += `**Channel Restriction:** ${command.channel}`;
+    if (command.channel) resp += `**Channel Restriction:** ${command.channel}\n`;
 
     if (command.userPermissions) {
       const perms = this.processPermissions(command);
