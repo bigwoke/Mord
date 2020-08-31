@@ -55,10 +55,11 @@ class UrbanCommand extends Command {
       const entries = response.length >= 3 ? 3 : response.length;
       const urbanDict = 'https://www.urbandictionary.com/define.php?term=';
       const embed = new MessageEmbed();
+      const term = args.term.split(/\s/gu).join('+');
 
       embed.setTitle(`Here are the top ${entries} entries ` +
         `on Urban Dictionary for the term "${args.term}"`);
-      embed.setURL(`${urbanDict}${args.term.replace(' ', '+')}`);
+      embed.setURL(`${urbanDict}${term}`);
 
       for (let ct = 0; ct < entries; ct++) {
         appendField(embed, ct, response);
