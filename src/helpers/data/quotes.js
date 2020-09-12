@@ -33,12 +33,16 @@ function advanceSequence (mongo, guild) {
 
 /**
  * An index is set up in a quote database collection for the given guild,
- * ensuring that no two quotes will share the same number.
+ * ensuring that no two quotes will share the same number. A text index is also
+ * set to make string-based queries possible.
  * @param {MongoClient} mongo - Instance of MongoClient with DB connection.
  * @param {Guild} guild - Discord Guild instance.
  */
-function setQuoteIndex (mongo, guild) {
-  const indexSpecs = [{ key: { number: 1 }, unique: true }];
+function setQuoteIndexes (mongo, guild) {
+  const indexSpecs = [
+    { key: { number: 1 }, unique: true },
+    { key: { quote: 'text' } }
+  ];
 
   mongo.db(quoteDB).collection(guild.id)
     .createIndexes(indexSpecs)
@@ -54,7 +58,7 @@ function setQuoteIndex (mongo, guild) {
  */
 function addQuote (mongo, guild, document) {
   if (!guild.id) throw new Error('[DB] Guild without ID should not exist.');
-  setQuoteIndex(mongo, guild);
+  setQuoteIndexes(mongo, guild);
 
   return advanceSequence(mongo, guild).then(res => {
     document.number = res.value.quote_sequence;
@@ -98,6 +102,30 @@ function delQuote (mongo, guild, number) {
       log.error('[DB] Error deleting quote: %o', err);
       throw err;
     });
+}
+
+/**
+ * Builds the query to use when finding quotes using the given filter.
+ * @param {number | User | Date | string | null} filter - Quote filter.
+ * @returns {Object}
+ */
+function buildFilterQuery (filter) {
+  /*
+   * If a quote is requested by number, filter for that number.
+   * Else if request is for a User, filter by that user's ID.
+   * Else if request is for a Date, filter by that date.
+   * Else if filter is string, search for text matching the filter.
+   */
+  if (typeof filter === 'number') {
+    return { number: filter };
+  } else if (filter instanceof User) {
+    return { 'author.id': filter.id };
+  } else if (filter instanceof Date) {
+    return { date: { $gte: filter } };
+  } else if (typeof filter === 'string') {
+    return { $text: { $search: filter } };
+  }
+  return {};
 }
 
 /**
@@ -151,39 +179,29 @@ function manageTimeoutCount (guild, count, filter) {
  * Gets a quote using the provided filter (random otherwise).
  * @param {MongoClient} mongo - Instance of MongoClient with DB connection.
  * @param {Guild} guild - Discord Guild instance.
- * @param {number | User} filter - Filter used to get quote.
+ * @param {number | User | Date | string} filter - Filter used to get quote.
  * @returns {AggregationCursor}
  */
 function getQuote (mongo, guild, filter = null) {
-  const randomize = isNaN(parseInt(filter, 10));
-  let filterQuery = {};
-
-  /*
-   * If a quote is requested by number, filter for that number.
-   * Else if request is for a User, filter by that user's ID.
-   */
-  if (typeof filter === 'number') {
-    filterQuery = { number: filter };
-  } else if (filter instanceof User) {
-    filterQuery = { 'author.id': filter.id };
-  }
+  const useTimeouts = filter instanceof User || filter === null;
+  const filterQuery = buildFilterQuery(filter);
 
   // Make new collection for this guild in timeouts if one doesn't exist.
   if (!timeouts.has(guild.id)) timeouts.set(guild.id, new Collection());
   const recents = timeouts.get(guild.id);
 
   return getQuoteCount(mongo, guild, filter).then(ct => {
-    if (randomize) manageTimeoutCount(guild, ct, filter);
+    if (useTimeouts) manageTimeoutCount(guild, ct, filter);
 
     // Set the recentQuery filter query to use timed out numbers if necessary
-    const recentQuery = randomize
+    const recentQuery = useTimeouts
       ? { number: { $nin: timeouts.get(guild.id).keyArray() } }
       : { number: { $nin: [] } };
 
     /**
      * In order, set the pipeline stages to match both the filter query
      * (querying by user ID, by number, or not at all), and the recent quote
-     * query, preventing duplicates if this is a randomized search (not by num).
+     * query, preventing duplicates if using timeouts (search by user/none).
      * Then take a random sample from that result, choosing one document.
      */
     const pipeline = [
@@ -191,11 +209,21 @@ function getQuote (mongo, guild, filter = null) {
       { $sample: { size: 1 } }
     ];
 
+    // If filtering by date, sort in ascending order and limit to one result.
+    if (filter instanceof Date) {
+      pipeline.pop();
+      pipeline.push(
+        { $sort: { date: 1 } },
+        { $limit: 1 },
+        { $sample: { size: 1 } }
+      );
+    }
+
     return mongo.db(quoteDB).collection(guild.id)
       .aggregate(pipeline).toArray()
       .then(res => {
-        // If randomized search, add quote number to timeout collection.
-        if (randomize && res[0]) {
+        // If using timeouts, add quote number to timeout collection.
+        if (useTimeouts && res[0]) {
           const quoteNumber = res[0].number;
           const timeoutFunc = () => recents.delete(quoteNumber);
           const timeoutObject = {

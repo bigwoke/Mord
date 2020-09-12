@@ -8,21 +8,27 @@ class QuoteCommand extends Command {
       aliases: ['quote', 'getquote', 'q'],
       category: 'quotes',
       channel: 'guild',
-      description: 'Displays a quote, its date, and author.',
-      details: 'When provided with no arguments, this will return a random ' +
-        'quote from that guild, displaying the quote, author, and date. ' +
-        'Providing a number will return the quote with that number, and ' +
-        'providing a user will return a random quote by that user.' +
-        'Requesting a non-specific quote (random or user search), the ' +
-        'returned quote will be given a cooldown amounting to the command ' +
-        'cooldown time, multiplied by the amount of quotes stored for that ' +
-        'guild. This is done to prevent excessive duplicates, and quotes ' +
-        'still be accessed during this time by specifying their number. ',
+      description: 'Displays a quote, its date, author, and submitter.',
+      details: 'There are different ways to get quotes:\n' +
+        'When provided with *no arguments*, this command returns a random ' +
+        'quote from the guild. Providing a *number* will return the quote with ' +
+        'that number, providing a *user* will return a random quote by that ' +
+        'user, providing a *date* will return the first quote entered *on or ' +
+        'after* that date, and providing *other text* will search quotes for ' +
+        'that text and return any matches at random.\nWhen requesting a ' +
+        'non-specific quote (random or user search) the returned quote ' +
+        'will be given a cooldown amounting to the command cooldown time, ' +
+        'multiplied by the amount of quotes stored for that guild. This ' +
+        'is done to prevent excessive duplicates, and quotes can still be ' +
+        'accessed during this time by specifying their number. ',
       cooldown: 5000,
       examples: [
         { text: 'quote' },
         { text: 'quote 45' },
-        { text: 'quote Mord' }
+        { text: 'quote Mord' },
+        { text: 'quote @Mord' },
+        { text: 'quote 4/31/2019' },
+        { text: 'quote sample text' }
       ],
       args: [
         {
@@ -31,9 +37,10 @@ class QuoteCommand extends Command {
             const { resolver } = this.handler;
             const num = await Argument.cast('number', resolver, message, phrase);
             const user = await Argument.cast('user', resolver, message, phrase);
-            return num || user || null;
+            const date = await Argument.cast('date', resolver, message, phrase);
+            return num || user || date || phrase || null;
           },
-          description: 'Number or user to retrieve a quote with.'
+          description: 'Number, user, date, or text to use in a quote search.'
         }
       ]
     });
