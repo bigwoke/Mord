@@ -71,13 +71,12 @@ class QuoteCommand extends Command {
       ? author.user.displayAvatarURL()
       : `https://cdn.discordapp.com/embed/avatars/${author.discriminator % 5}.png`;
 
-    const embed = new MessageEmbed();
-    embed.setColor(author.displayColor);
-    embed.setAuthor(
-      author.displayName || author.username,
-      avatarURL
-      );
-    embed.setDescription(`"${quote.quote}"`);
+    const embed = new MessageEmbed()
+      .setColor(author.displayColor)
+      .setTitle(`"${quote.quote}"`)
+      .setURL(quote.url ? quote.url.href : null)
+      .setAuthor(author.displayName || author.username, avatarURL);
+
     embed.setFooter(`#${quote.number} - ${date} - Added by ` +
       `${submitter.displayName || submitter.username}`);
 
