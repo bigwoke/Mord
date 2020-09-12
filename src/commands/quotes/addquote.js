@@ -8,18 +8,20 @@ class AddQuoteCommand extends Command {
       aliases: ['addquote', 'add-quote', 'newquote', 'qadd'],
       category: 'quotes',
       channel: 'guild',
-      description: 'Adds a quote by a given user. Syntax is a bit particular.',
+      description: 'Adds a quote by a given user. *Syntax is a bit particular.*',
       details: 'Adds a given quote to the database, storing the quote, its ' +
         'author, the date and time (given or current), the person adding the ' +
         'quote, and the quote\'s assigned incrementing number, different ' +
         'per-guild. Quotes are separate between guilds, there are no global ' +
-        'quotes. __The quote itself *must* be enclosed in quotes.__ This ' +
-        'also applies to the date option input if one is included. To use a ' +
+        'quotes. __The quote itself *must* be enclosed in quotation marks.__ ' +
+        'This also applies to the date option input if one is included, and ' +
+        'the url option if there is a space in the address. To use a ' +
         'custom date (i.e. the quote was said in the past), include the ' +
         '`--date` option in the command, followed by a string that resolves ' +
         'to a date. Time zones are supported, but optional. Dates can be ' +
         'as specific or vague as you wish, see some included examples for ' +
-        'reference if necessary.',
+        'reference if necessary. Same procedure for a url, include --url ' +
+        'followed by a *fully qualified* URL (including protocol).',
       destruct: 10000,
       cooldown: 5000,
       args: [
@@ -48,6 +50,14 @@ class AddQuoteCommand extends Command {
           description: 'Date the quote was authored.',
           default: new Date(Date.now()),
           flag: '--date'
+        },
+        {
+          id: 'url',
+          type: 'url',
+          match: 'option',
+          description: 'URL containing the quote or context. ' +
+            'Must include protocol (i.e. http:// or https://).',
+          flag: '--url'
         }
       ],
       examples: [
@@ -71,6 +81,9 @@ class AddQuoteCommand extends Command {
         {
           text: 'addquote @Mord "funny quote" --date "2023"',
           notes: 'date is vague but 100% valid'
+        },
+        {
+          text: 'addquote Mord "funny quote" --url "google.com"'
         }
       ]
     });
@@ -81,6 +94,7 @@ class AddQuoteCommand extends Command {
     const document = {
       quote: args.quote.trim(),
       date: args.date,
+      url: args.url,
       author: args.author,
       submitter: message.author
     };
