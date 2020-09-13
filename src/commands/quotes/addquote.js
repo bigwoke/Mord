@@ -14,7 +14,9 @@ class AddQuoteCommand extends Command {
         'author, the date and time (given or current), the person adding the ' +
         'quote, and the quote\'s assigned incrementing number, different ' +
         'per-guild. Quotes are separate between guilds, there are no global ' +
-        'quotes. __The quote itself *must* be enclosed in quotation marks.__ ' +
+        'quotes. __The quote itself should be enclosed in quotation marks.__ ' +
+        'The author of the quote also must be the first argument provided ' +
+        'to allow for the quote to still resolve if there are no quotations. ' +
         'This also applies to the date option input if one is included, and ' +
         'the url option if there is a space in the address. To use a ' +
         'custom date (i.e. the quote was said in the past), include the ' +
@@ -38,6 +40,7 @@ class AddQuoteCommand extends Command {
         },
         {
           id: 'quote',
+          match: 'separate',
           type: async (message, phrase) => {
             const { resolver } = this.handler;
             const q = await Argument.cast('string', resolver, message, phrase);
@@ -113,6 +116,9 @@ class AddQuoteCommand extends Command {
 
   exec (message, args) {
     args.author = args.author.user;
+    args.quote.shift();
+    args.quote = args.quote.join(' ');
+
     const document = {
       quote: args.quote.trim(),
       date: args.date,
