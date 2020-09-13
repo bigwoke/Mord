@@ -73,12 +73,17 @@ class QuoteCommand extends Command {
 
     const embed = new MessageEmbed()
       .setColor(author.displayColor)
-      .setTitle(`"${quote.quote}"`)
       .setURL(quote.url ? quote.url.href : null)
       .setAuthor(author.displayName || author.username, avatarURL);
 
     embed.setFooter(`#${quote.number} - ${date} - Added by ` +
       `${submitter.displayName || submitter.username}`);
+
+    if (quote.url) {
+      embed.setDescription(`"[${quote.quote}](${quote.url.href})"`);
+    } else {
+      embed.setDescription(`"${quote.quote}"`);
+    }
 
     return embed;
   }
