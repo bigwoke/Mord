@@ -1,5 +1,6 @@
 const Command = require('../../types/MordCommand');
 const log = require('../../helpers/log');
+const { Argument } = require('discord-akairo');
 
 class AddQuoteCommand extends Command {
   // eslint-disable-next-line max-lines-per-function
@@ -37,10 +38,17 @@ class AddQuoteCommand extends Command {
         },
         {
           id: 'quote',
+          type: async (message, phrase) => {
+            const { resolver } = this.handler;
+            const q = await Argument.cast('string', resolver, message, phrase);
+            if (q && q.length <= 1800) return q;
+            return null;
+          },
           description: 'Quote to be added.',
           unordered: true,
           prompt: {
-            start: 'What is the quote you want to add?'
+            start: 'What quote do you want to add (remember, under 1800 chars)?',
+            retry: 'Remember, quotes must be at most 1800 characters. Try again.'
           }
         },
         {
@@ -49,15 +57,29 @@ class AddQuoteCommand extends Command {
           match: 'option',
           description: 'Date the quote was authored.',
           default: new Date(Date.now()),
-          flag: '--date'
+          flag: '--date',
+          prompt: {
+            retry: 'Could not resolve a valid date, what date do you want to use?',
+            optional: true
+          }
         },
         {
           id: 'url',
-          type: 'url',
+          type: async (message, phrase) => {
+            const { resolver } = this.handler;
+            const url = await Argument.cast('url', resolver, message, phrase);
+            if (url.href && url.href.length <= 240) return url;
+            return null;
+          },
           match: 'option',
           description: 'URL containing the quote or context. ' +
-            'Must include protocol (i.e. http:// or https://).',
-          flag: '--url'
+            'Must include protocol (i.e. https://), and be under 240 chars.',
+          flag: '--url',
+          prompt: {
+            retry: 'Could not set URL, what URL do you want to use? Remember ' +
+              'to include the protocol and keep it below 240 chars.',
+            optional: true
+          }
         }
       ],
       examples: [
