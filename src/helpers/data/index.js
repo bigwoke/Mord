@@ -43,6 +43,14 @@ class Data {
   }
 
   /**
+   * Gets the latest quote in a guild.
+   * @param {*} guild - Discord guild instance.
+   */
+  async getLatestQuote (guild) {
+    return quotes.getLatestQuote(await this.db, guild);
+  }
+
+  /**
    * Gets a quote using the provided filter (or random).
    * @param {Guild} guild - Discord Guild instance.
    * @param {number | User} filter - Filter used to get quote.

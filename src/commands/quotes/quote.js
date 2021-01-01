@@ -47,9 +47,19 @@ class QuoteCommand extends Command {
   }
 
   exec (message, args) {
-    this.client.data.getQuote(message.guild, args.filter).then(quote => {
-      if (!quote && !args.filter) return this.send(message, 'None exist, add some!');
-      else if (!quote) return this.send(message, 'Could not find a matching quote.');
+    this.client.data.getQuote(message.guild, args.filter).then(async quote => {
+      // If no quote is found
+      if (!quote) {
+        // ...and there are no filters, then there are no quotes.
+        if (!args.filter) return this.send(message, 'None exist, add some!');
+        // ...and the filter used is not numeric, there are no matching quotes.
+        if (isNaN(args.filter)) return this.send(message, 'Could not find a matching quote.');
+        // ...and the filter is a smaller number than the latest quote number, deleted quote.
+        const { number: max } = await this.client.data.getLatestQuote(message.guild);
+        if (args.filter < max) return this.send(message, 'That quote is deleted.');
+        // ...and the filter is higher than quote count (only remaining condition), no match.
+        return this.send(message, 'There is no quote with that number.');
+      }
 
       const embed = this.buildEmbed(message, quote);
       this.send(message, null, { embed: embed });

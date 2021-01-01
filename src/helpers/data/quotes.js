@@ -129,6 +129,24 @@ function buildFilterQuery (filter) {
 }
 
 /**
+ * Gets the latest quote from a guild by default, filters by a specific
+ * user if one is provided in the form of a discord User instance.
+ * @param {MongoClient} mongo - Instance of MongoClient with DB connection.
+ * @param {Guild} guild - Discord Guild instance
+ * @param {User} author - Quote author as a user instance.
+ * @returns {Promise<Object>}
+ */
+function getLatestQuote (mongo, guild, author = null) {
+  const query = author instanceof User
+    ? { 'author.id': author.id }
+    : {};
+  const options = { maxTimeMS: 250, sort: { number: -1 }, limit: 1 };
+
+  return mongo.db(quoteDB).collection(guild.id).findOne(query, options)
+    .catch(err => log.error('[DB] Error getting highest quote: %o', err));
+}
+
+/**
  * Gets quote count of an entire collection by default, or counts quotes by
  * a specific user if one is provided in the form of a discord User instance.
  * @param {MongoClient} mongo - Instance of MongoClient with DB connection.
@@ -143,7 +161,7 @@ function getQuoteCount (mongo, guild, author = null) {
   const options = { maxTimeMS: 250 };
 
   return mongo.db(quoteDB).collection(guild.id).countDocuments(query, options)
-    .catch(err => log.error('[DB] Error getting quote `count`: %o', err));
+    .catch(err => log.error('[DB] Error getting quote count: %o', err));
 }
 
 /**
@@ -244,6 +262,7 @@ function getQuote (mongo, guild, filter = null) {
 module.exports = {
   addQuote,
   delQuote,
+  getLatestQuote,
   getQuote,
   getQuoteCount
 };
