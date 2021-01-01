@@ -19,11 +19,15 @@ class QuoteCountCommand extends Command {
     });
   }
 
-  exec (message) {
-    this.client.data.getQuoteCount(message.guild).then(count => {
-      const { name } = message.guild;
-      this.send(message, `Quotes registered so far in ${name}: **${count}**`);
-    });
+  async exec (message) {
+    const count = await this.client.data.getQuoteCount(message.guild);
+    const latest = await this.client.data.getLatestQuote(message.guild);
+    const { name } = message.guild;
+    const response =
+      `Total quotes registered so far in ${name}: **${count}**` +
+      `\nLatest (highest) quote number: **${latest.number}**`;
+
+    this.send(message, response);
   }
 }
 
