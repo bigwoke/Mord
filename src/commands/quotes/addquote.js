@@ -10,37 +10,33 @@ class AddQuoteCommand extends Command {
       category: 'quotes',
       channel: 'guild',
       description: 'Adds a quote by a given user. *Syntax is a bit particular.*',
-      details: 'Adds a given quote to the database, storing the quote, its ' +
-        'author, the date and time (given or current), the person adding the ' +
-        'quote, and the quote\'s assigned incrementing number, different ' +
-        'per-guild. Quotes are separate between guilds, there are no global ' +
-        'quotes. __The quote itself should be enclosed in quotation marks.__ ' +
-        'The author of the quote also must be the first argument provided ' +
-        'to allow for the quote to still resolve if there are no quotations. ' +
-        'This also applies to the date option input if one is included, and ' +
-        'the url option if there is a space in the address. To use a ' +
-        'custom date (i.e. the quote was said in the past), include the ' +
+      details: 'Adds a given quote to the database. Quotes are separate between ' +
+        'guilds, there are no global quotes. __The author must be mentioned, ' +
+        'and the quote itself should be enclosed in quotation marks.__ This ' +
+        'also applies to the date option input if one is included, and the url ' +
+        'option if there is a space in the address. \n' +
+        'To use a custom date (if the quote was said in the past) include the ' +
         '`--date` option in the command, followed by a string that resolves ' +
         'to a date. Time zones are supported, but optional. Dates can be ' +
         'as specific or vague as you wish, see some included examples for ' +
-        'reference if necessary. Same procedure for a url, include --url ' +
-        'followed by a *fully qualified* URL (including protocol).',
+        'reference if necessary. Same procedure for a url; include `--url` ' +
+        'followed by a *fully qualified* URL (so, including http or https).',
       destruct: 10000,
       cooldown: 5000,
       args: [
         {
           id: 'author',
-          type: 'member',
-          description: 'Guild member who authored the quote.',
+          type: 'memberMention',
+          description: 'Guild member (@mention) who authored the quote.',
           unordered: true,
           prompt: {
-            start: 'Who is the author of the quote?',
+            start: 'Who is the author of the quote? @Mention them.',
             retry: 'Could not find that guild member. Try again.'
           }
         },
         {
           id: 'quote',
-          match: 'separate',
+          match: 'phrase',
           type: async (message, phrase) => {
             const { resolver } = this.handler;
             const q = await Argument.cast('string', resolver, message, phrase);
@@ -50,8 +46,9 @@ class AddQuoteCommand extends Command {
           description: 'Quote to be added.',
           unordered: true,
           prompt: {
-            start: 'What quote do you want to add (remember, under 1800 chars)?',
-            retry: 'Remember, quotes must be at most 1800 characters. Try again.'
+            retries: 0,
+            start: 'What quote do you want to add?',
+            ended: 'Quote is too long, quotes must be at most 1800 characters.'
           }
         },
         {
@@ -87,18 +84,22 @@ class AddQuoteCommand extends Command {
       ],
       examples: [
         {
+          text: 'addquote',
+          notes: 'will prompt for author and quote, use the current date, no url'
+        },
+        {
           text: 'addquote @Mord',
           notes: 'will use the current date and prompt for quote'
         },
         {
-          text: 'addquote Mord "funny quote"',
+          text: 'addquote @Mord "funny quote"',
           notes: 'will use the current date'
         },
         {
-          text: 'addquote "funny quote" Mord --date "3/21/2023"'
+          text: 'addquote "funny quote" @Mord --date "3/21/2023"'
         },
         {
-          text: 'addquote --date "March 2023" "funny quote" Mord'
+          text: 'addquote --date "March 2023" "funny quote" @Mord'
         },
         {
           text: 'addquote @Mord "funny quote" --date "March 21, 2023 5:34:06 PM GMT-9"'
@@ -108,7 +109,8 @@ class AddQuoteCommand extends Command {
           notes: 'date is vague but 100% valid'
         },
         {
-          text: 'addquote Mord "funny quote" --url "google.com"'
+          text: 'addquote @Mord "funny quote" --url "https://google.com"',
+          notes: 'quote will link to Google'
         }
       ]
     });
@@ -116,8 +118,7 @@ class AddQuoteCommand extends Command {
 
   exec (message, args) {
     args.author = args.author.user;
-    args.quote.shift();
-    args.quote = args.quote.join(' ');
+    args.quote.replace(/^"+|"+$/gu, '');
 
     const document = {
       quote: args.quote.trim(),
