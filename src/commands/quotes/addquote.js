@@ -56,7 +56,6 @@ class AddQuoteCommand extends Command {
           type: 'date',
           match: 'option',
           description: 'Date the quote was authored.',
-          default: new Date(Date.now()),
           flag: '--date',
           prompt: {
             retry: 'Could not resolve a valid date, what date do you want to use?',
@@ -122,7 +121,7 @@ class AddQuoteCommand extends Command {
 
     const document = {
       quote: args.quote.trim(),
-      date: args.date,
+      date: args.date || new Date(Date.now()),
       url: args.url,
       author: args.author,
       submitter: message.author
