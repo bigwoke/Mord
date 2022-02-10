@@ -128,8 +128,8 @@ class AddQuoteCommand extends Command {
     };
 
     this.client.data.addQuote(message.guild, document).then(res => {
-      if (res.result.ok === 1) {
-        const num = res.op.number;
+      if (res.acknowledged) {
+        const num = res.insertedId;
         const { tag } = args.author;
         this.send(message, `Quote #${num} by ${tag} has been added.`);
       } else {

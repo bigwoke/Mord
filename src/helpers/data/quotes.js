@@ -66,11 +66,11 @@ function addQuote (mongo, guild, document) {
     return mongo.db(quoteDB).collection(guild.id)
       .insertOne(document)
       .then(r => {
-        if (r.result.ok === 1) {
+        if (r.acknowledged) {
           log.verbose(`[DB] + Quote #${document.number} in "${guild.name}" added.`);
         }
 
-        return { result: r.result, op: r.ops[0] };
+        return r;
       })
       .catch(err => {
         log.error('[DB] Error adding quote: %o', err);

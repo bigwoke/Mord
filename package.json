@@ -1,6 +1,6 @@
 {
   "name": "mord",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Versatile, multipurpose Discord bot",
   "main": "bot.js",
   "scripts": {
@@ -13,7 +13,7 @@
     "discord-akairo": "^8.1.0",
     "discord.js": "^12.5.3",
     "dotenv": "^8.6.0",
-    "mongodb": "^3.6.6",
+    "mongodb": "^4.3.1",
     "winston": "^3.3.3"
   },
   "devDependencies": {
