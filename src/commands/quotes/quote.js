@@ -55,7 +55,8 @@ class QuoteCommand extends Command {
         // ...and the filter used is not numeric, there are no matching quotes.
         if (isNaN(args.filter)) return this.send(message, 'Could not find a matching quote.');
         // ...and the filter is a smaller number than the latest quote number, deleted quote.
-        const { number: max } = await this.client.data.getLatestQuote(message.guild);
+        const latest = await this.client.data.getLatestQuote(message.guild);
+        const max = latest?.number || 0;
         if (args.filter < max) return this.send(message, 'That quote is deleted.');
         // ...and the filter is higher than quote count (only remaining condition), no match.
         return this.send(message, 'There is no quote with that number.');
